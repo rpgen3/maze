@@ -182,13 +182,13 @@
     };
     $('<div>').appendTo(body).text('迷路生成');
     addBtn(body, '棒倒し法', () => {
-        makeMaze(fallStick);
+        makeMaze(rpgen4.fallStick);
     });
     addBtn(body, '壁伸ばし法', () => {
-        makeMaze(extendWall);
+        makeMaze(rpgen4.extendWall);
     });
     addBtn(body, '穴掘り法', () => {
-        makeMaze(dig);
+        makeMaze(rpgen4.dig);
     });
     const search = async func => {
         const _ = performance.now();
@@ -216,21 +216,33 @@
         }
         msg(`finish ${performance.now() - _}ms`);
     };
-    $('<div>').appendTo(body).text('しらみつぶしの探索');
+    $('<div>').appendTo(body).text('しらみつぶし探索');
     addBtn(body, '深さ優先探索', () => {
-        search(dfs);
+        search(rpgen5.dfs);
     });
     addBtn(body, '幅優先探索', () => {
-        search(bfs);
+        search(rpgen5.bfs);
     });
     addBtn(body, 'ダイクストラ法', () => {
-        search(dijkstra);
+        search(rpgen5.dijkstra);
     });
     $('<div>').appendTo(body).text('ヒューリスティック探索');
     addBtn(body, '最良優先探索', () => {
-        search(bestFirst);
+        search(rpgen5.bestFirst);
     });
     addBtn(body, 'A*アルゴリズム', () => {
-        search(aStar);
+        search(rpgen5.aStar);
     });
+    const rpgen4 = await importAll([
+        'fallStick',
+        'extendWall',
+        'dig'
+    ].map(v => `https://rpgen3.github.io/maze/mjs/makeMaze/${v}.mjs`));
+    const rpgen5 = await importAll([
+        'dfs',
+        'bfs',
+        'dijkstra',
+        'bestFirst',
+        'aStar'
+    ].map(v => `https://rpgen3.github.io/maze/mjs/search/${v}.mjs`));
 })();
