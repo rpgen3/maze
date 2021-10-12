@@ -1,5 +1,5 @@
 (async () => {
-    const {importAll, getScript} = await import(`https://rpgen3.github.io/mylib/export/import.mjs`);
+    const {importAll, getScript, importAllSettled} = await import(`https://rpgen3.github.io/mylib/export/import.mjs`);
     await getScript('https://code.jquery.com/jquery-3.3.1.min.js');
     const $ = window.$;
     const html = $('body').empty().css({
@@ -231,12 +231,12 @@
     addBtn(body, 'A*アルゴリズム', () => {
         search(rpgen5.aStar);
     });
-    const rpgen4 = await importAll([
+    const rpgen4 = await importAllSettled([
         'fallStick',
         'extendWall',
         'dig'
     ].map(v => `https://rpgen3.github.io/maze/mjs/makeMaze/${v}.mjs`));
-    const rpgen5 = await importAll([
+    const rpgen5 = await importAllSettled([
         'dfs',
         'bfs',
         'dijkstra',
