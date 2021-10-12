@@ -112,9 +112,10 @@
         ctx.stroke();
     };
     cvScale.cv.bind('contextmenu', () => false).on('mousedown mousemove touchstart touchmove', ({offsetX, offsetY, buttons, which}) => {
-        if(!which || log.unchanged({offsetX, offsetY, buttons})) return;
+        if(!which) return;
         const [x, y] = [offsetX, offsetY].map(v => v / g_unit | 0),
               erase = buttons === 2 || eraseFlag();
+        if(log.unchanged(x, y, erase)) return;
         switch(inputType()){
             case 0:
                 cvMaze.draw(x, y, erase);
@@ -139,22 +140,19 @@
         }
     });
     const log = new class {
-        constructor(...keys){
-            this.keys = keys;
-            this.values = new Map;
+        constructor(num){
+            this.arr = [...Array(num)];
         }
-        unchanged(obj){
-            const {keys, values} = this;
+        unchanged(...arg){
             let flag = true;
-            for(const k of keys) {
-                const v = obj[k];
-                if(v === values.get(k)) continue;
-                values.set(k, v);
+            for(const [i, v] of this.arr.entries()) {
+                if(v === arg[i]) continue;
+                this.arr[i] = v;
                 if(flag) flag = false;
             }
             return flag;
         }
-    }('offsetX', 'offsetY', 'buttons');
+    }(3);
     const inputDelay = rpgen3.addInputNum(body, {
         label: '表示の遅延時間[ms]',
         save: true,
