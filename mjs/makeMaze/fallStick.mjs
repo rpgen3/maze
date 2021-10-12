@@ -31,18 +31,19 @@ export const fallStick = async ({width, height, callback}) => {
         const [w, h] = [width, height].map(v => (v >> 1) - 1);
         for(let i = 0; i < h; i++) {
             for(let j = 0; j < w; j++) {
-                const xy = [i, j].map(v => v + 1 << 1);
+                const xy = [j, i].map(v => v + 1 << 1);
                 arr.push(xy);
                 await put(toI(...xy));
             }
         }
     }
     // ランダムな方向に倒す(1行目以外は上方向を禁止，既に壁がある方向は禁止)
-    for(const [x, y] of arr) {
-        const a = [[1, 0], [0, 1]];
+    for(const xy of arr) {
+        const [x, y] = xy,
+              a = [[1, 0], [0, 1]];
         if(y === 2) a.push([0, -1]);
         if(!maze[toI(x - 1, y)]) a.push([-1, 0]);
-        await put(toI(...rand(a)));
+        await put(toI(...rand(a).map((v, i) => v + xy[i])));
     }
     return maze;
 };
