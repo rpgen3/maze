@@ -44,6 +44,7 @@
         for(const i of g_maze.keys()) g_maze[i] = false;
     };
     addBtn(head, '初期化', () => {
+        g_status++;
         [g_w, g_h] = [inputW(), inputH()];
         g_maze = [...Array(g_w * g_h).fill(false)];
         g_unit = $(window).width() / inputW | 0;
