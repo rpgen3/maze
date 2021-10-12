@@ -63,7 +63,7 @@ export const extendWall = async ({width, height, callback}) => {
         if(!nexts.length) return extend(stack.pop()); // 四方がすべて現在拡張中の壁の場合
         else {
             const next = randArr(nexts);
-            await put(...[x, y].map((v, i) => v + (next[i] - v) >> 1), -1); // 奇数マス
+            await put(...[x, y].map((v, i) => v + (next[i] - v) >> 1)); // 奇数マス
             {
                 if(maze[toI(...next)]) { // 壁の場合
                     while(now.length) now.pop();
