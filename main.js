@@ -182,7 +182,7 @@
                 await sleep(inputDelay());
             }
         });
-        msg(`finish ${performance.now() - _}ms`);
+        msg(`finish ${performance.now() - _ | 0}ms`);
     };
     $('<div>').appendTo(body).text('迷路生成');
     addBtn(body, '棒倒し法', () => {
