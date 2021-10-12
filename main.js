@@ -201,9 +201,9 @@
         cvUsed.clear();
         cvRoad.clear();
         const result = await func({
-            array: g_maze.slice(), // 複製を渡す
-            start: xyStart,
-            goal: xyGoal,
+            array: g_maze.slice(),
+            start: xyStart.slice(),
+            goal: xyGoal.slice(),
             width: g_w,
             height: g_h,
             callback: async i => {
