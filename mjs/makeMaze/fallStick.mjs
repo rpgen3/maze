@@ -1,5 +1,5 @@
 const rand = arr => arr[Math.random() * arr.length | 0];
-export const fallStick = async (width, height, callback) => {
+export const fallStick = async ({width, height, callback}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
         const x = i % width,
