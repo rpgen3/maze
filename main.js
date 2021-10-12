@@ -11,7 +11,8 @@
           body = $('<div>').appendTo(html).hide(),
           foot = $('<div>').appendTo(html).hide();
     const rpgen3 = await importAll([
-        'input'
+        'input',
+        'util'
     ].map(v => `https://rpgen3.github.io/mylib/export/${v}.mjs`));
     $('<div>').appendTo(head).text('経路探索');
     const addBtn = (h, ttl, func) => $('<button>').appendTo(h).text(ttl).on('click', func);
@@ -23,10 +24,6 @@
         });
     })();
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-    const dialog = async str => {
-        msg(str);
-        await sleep(30);
-    };
     const [inputW, inputH] = ['幅', '高さ'].map(label => rpgen3.addInputNum(head,{
         label, save: true,
         step: 2,
@@ -34,15 +31,20 @@
         min: 5,
         value: 49
     }));
-    let g_mass = [],
-        unit = 0;
+    let g_maze = [],
+        g_width = -1,
+        g_unit = -1;
+    const clearMaze = () => {
+        for(const i of g_maze.keys()) g_maze[i] = false;
+    };
     addBtn(head, '初期化', () => {
         const [w, h] = [inputW(), inputH()];
-        g_mass = [...Array(w * h).fill(false)];
-        unit = $(window).width() / inputW | 0;
+        g_width = w;
+        g_maze = [...Array(w * h).fill(false)];
+        g_unit = $(window).width() / inputW | 0;
         hCv.find('canvas').prop({
-            width: w * unit,
-            height: h * unit
+            width: w * g_unit,
+            height: h * g_unit
         });
         drawScale(w, h);
         body.add(foot).show();
@@ -79,7 +81,7 @@
         }
         draw(x, y, isErase){
             this.ctx.fillStyle = this.color;
-            this.ctx[isErase ? 'clearRect' : 'fillRect'](...[x, y, 1, 1].map(v => v * unit));
+            this.ctx[isErase ? 'clearRect' : 'fillRect'](...[x, y, 1, 1].map(v => v * g_unit));
         }
         clear(){
             const {width, height} = this.ctx.canvas;
@@ -97,13 +99,13 @@
           xyGoal = [-1, -1];
     const drawScale = (w, h) => {
         const max = Math.max(w, h),
-              [_w, _h] = [w, h].map(v => v * unit),
+              [_w, _h] = [w, h].map(v => v * g_unit),
               {ctx, color} = cvScale;
         ctx.strokeStyle = color;
         ctx.lineWidth = 1;
         ctx.beginPath();
         for(let i = -1; i <= max; i++) {
-            const _ = i * unit;
+            const _ = i * g_unit;
             if(i <= w) ctx.moveTo(_, 0), ctx.lineTo(_, _h);
             if(i <= h) ctx.moveTo(0, _), ctx.lineTo(_w, _);
         }
@@ -111,12 +113,12 @@
     };
     cvScale.cv.bind('contextmenu', () => false).on('mousedown mousemove touchstart touchmove', ({offsetX, offsetY, buttons, which}) => {
         if(!which || log.unchanged({offsetX, offsetY, buttons})) return;
-        const [x, y] = [offsetX, offsetY].map(v => v / unit | 0),
+        const [x, y] = [offsetX, offsetY].map(v => v / g_unit | 0),
               erase = buttons === 2 || eraseFlag();
         switch(inputType()){
             case 0:
                 cvMaze.draw(x, y, erase);
-                g_mass[x * y] = !erase;
+                g_maze[x * y] = !erase;
                 break;
             case 1:
                 cvStart.clear().draw(x, y, erase);
@@ -159,23 +161,76 @@
         max: 1000,
         value: 300
     });
+    let g_status = -1;
+    const makeMaze = async func => {
+        const _ = performance.now();
+        msg(`start ${rpgen3.getTime()}`);
+        const status = ++g_status;
+        cvMaze.clear();
+        clearMaze();
+        await func({
+            width: g_width,
+            height: g_maze.length / g_width,
+            callback: async (x, y) => {
+                if(g_status !== status) throw 'break';
+                g_maze[x * y] = true;
+                cvMaze.draw(x, y);
+                await sleep(inputDelay());
+            }
+        });
+        msg(`finish ${performance.now() - _}ms`);
+    };
     $('<div>').appendTo(body).text('迷路生成');
     addBtn(body, '棒倒し法', () => {
+        makeMaze(fallStick);
     });
     addBtn(body, '壁伸ばし法', () => {
+        makeMaze(extendWall);
     });
     addBtn(body, '穴掘り法', () => {
+        makeMaze(dig);
     });
+    const search = async func => {
+        const _ = performance.now();
+        msg(`start ${rpgen3.getTime()}`);
+        const status = ++g_status;
+        cvUsed.clear();
+        cvRoad.clear();
+        const result = await func({
+            array: g_maze,
+            start: xyStart,
+            goal: xyGoal,
+            width: g_width,
+            callback: async (x, y) => {
+                if(g_status !== status) throw 'break';
+                cvUsed.draw(x, y);
+                await sleep(inputDelay());
+            }
+        });
+        for(const i of result) {
+            if(g_status !== status) throw 'break';
+            const x = i % g_width,
+                  y = i / g_width | 0;
+            cvRoad.draw(x, y);
+            await sleep(inputDelay());
+        }
+        msg(`finish ${performance.now() - _}ms`);
+    };
     $('<div>').appendTo(body).text('しらみつぶしの探索');
     addBtn(body, '深さ優先探索', () => {
+        search(dfs);
     });
     addBtn(body, '幅優先探索', () => {
+        search(bfs);
     });
-    $('<div>').appendTo(body).text('最適経路の探索');
-    addBtn(body, '最適探索（ダイクストラ法）', () => {
+    addBtn(body, 'ダイクストラ法', () => {
+        search(dijkstra);
     });
+    $('<div>').appendTo(body).text('ヒューリスティック探索');
     addBtn(body, '最良優先探索', () => {
+        search(bestFirst);
     });
     addBtn(body, 'A*アルゴリズム', () => {
+        search(aStar);
     });
 })();
