@@ -7,7 +7,7 @@ export const extendWall = async ({width, height, callback}) => {
               y = i / width | 0;
         return [x, y];
     };
-    const maze = [...Array(width * height).fiil(false)];
+    const maze = [...Array(width * height).fill(false)];
     const put = async i => {
         maze[i] = true;
         await callback(i);
