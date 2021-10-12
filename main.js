@@ -155,7 +155,7 @@
             return flag;
         }
     }('offsetX', 'offsetY', 'buttons');
-    const inputDelay = rpgen3.addInputNumber(body, {
+    const inputDelay = rpgen3.addInputNum(body, {
         label: '表示の遅延時間[ms]',
         save: true,
         max: 1000,
