@@ -32,21 +32,26 @@
         value: 49
     }));
     let g_maze = [],
-        g_width = -1,
+        g_w = -1,
+        g_h = -1,
         g_unit = -1;
+    const toXY = i => {
+        const x = i % g_w,
+              y = i / g_w | 0;
+        return [x, y];
+    };
     const clearMaze = () => {
         for(const i of g_maze.keys()) g_maze[i] = false;
     };
     addBtn(head, '初期化', () => {
-        const [w, h] = [inputW(), inputH()];
-        g_width = w;
-        g_maze = [...Array(w * h).fill(false)];
+        [g_w, g_h] = [inputW(), inputH()];
+        g_maze = [...Array(g_w * g_h).fill(false)];
         g_unit = $(window).width() / inputW | 0;
         hCv.find('canvas').prop({
-            width: w * g_unit,
-            height: h * g_unit
+            width: g_w * g_unit,
+            height: g_h * g_unit
         });
-        drawScale(w, h);
+        drawScale(g_w, g_h);
         body.add(foot).show();
     });
     const inputType = rpgen3.addSelect(foot, {
@@ -167,12 +172,12 @@
         cvMaze.clear();
         clearMaze();
         await func({
-            width: g_width,
-            height: g_maze.length / g_width,
-            callback: async (x, y) => {
+            width: g_w,
+            height: g_h,
+            callback: async i => {
                 if(g_status !== status) throw 'break';
-                g_maze[x * y] = true;
-                cvMaze.draw(x, y);
+                g_maze[i] = true;
+                cvMaze.draw(...toXY(i));
                 await sleep(inputDelay());
             }
         });
@@ -198,18 +203,17 @@
             array: g_maze,
             start: xyStart,
             goal: xyGoal,
-            width: g_width,
-            callback: async (x, y) => {
+            width: g_w,
+            height: g_h,
+            callback: async i => {
                 if(g_status !== status) throw 'break';
-                cvUsed.draw(x, y);
+                cvUsed.draw(...toXY(i));
                 await sleep(inputDelay());
             }
         });
         for(const i of result) {
             if(g_status !== status) throw 'break';
-            const x = i % g_width,
-                  y = i / g_width | 0;
-            cvRoad.draw(x, y);
+            cvRoad.draw(...toXY(i));
             await sleep(inputDelay());
         }
         msg(`finish ${performance.now() - _}ms`);
