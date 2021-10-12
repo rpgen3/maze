@@ -29,7 +29,7 @@
         step: 2,
         max: 299,
         min: 5,
-        value: 49
+        value: 25
     }));
     let g_maze = [],
         g_w = -1,
@@ -47,7 +47,7 @@
         g_status++;
         [g_w, g_h] = [inputW(), inputH()];
         g_maze = [...Array(g_w * g_h).fill(false)];
-        g_unit = $(window).width() / inputW | 0;
+        g_unit = $(window).width() * 0.5 / inputW | 0;
         hCv.find('canvas').prop({
             width: g_w * g_unit,
             height: g_h * g_unit
@@ -163,7 +163,7 @@
         label: '表示の遅延時間[ms]',
         save: true,
         max: 1000,
-        value: 300
+        value: 20
     });
     let g_status = -1;
     const makeMaze = async func => {
