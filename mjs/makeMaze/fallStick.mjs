@@ -1,4 +1,4 @@
-const rand = arr => arr[Math.random() * arr.length | 0];
+import {randArr} from 'https://rpgen3.github.io/mylib/export/random.mjs';
 export const fallStick = async ({width, height, callback}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
@@ -43,7 +43,7 @@ export const fallStick = async ({width, height, callback}) => {
               a = [[1, 0], [0, 1]];
         if(y === 2) a.push([0, -1]);
         if(!maze[toI(x - 1, y)]) a.push([-1, 0]);
-        await put(toI(...rand(a).map((v, i) => v + xy[i])));
+        await put(toI(...randArr(a).map((v, i) => v + xy[i])));
     }
     return maze;
 };
