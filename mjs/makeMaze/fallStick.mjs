@@ -1,6 +1,5 @@
-import {randInt, randArr} from 'https://rpgen3.github.io/mylib/export/random.mjs';
-const rand = arr => arr[Math.random() * arr.length | 0];
-export const extendWall = async ({width, height, update, updateAll}) => {
+import {randArr} from 'https://rpgen3.github.io/mylib/export/random.mjs';
+export const fallStick = async ({width, height, update, updateAll}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
         const x = i % width,
@@ -23,47 +22,25 @@ export const extendWall = async ({width, height, update, updateAll}) => {
             maze[b] = maze[b + a] = true;
         }
     }
-    await updateAll(maze);
-    // x, yともに偶数となる座標を壁伸ばし開始座標(候補)としてリストアップ
-    const unused = [];
-    {
+    const stick = [];
+    { // 基準となる壁の設置
         const [w, h] = [width, height].map(v => (v >> 1) - 1);
-        for(let i = 0; i < h; i++) for(let j = 0; j < w; j++) unused.push(toI(...[j, i].map(v => v + 1 << 1)));
-    }
-    const stack = [];
-    const main = async () => {
-        if(!unused.length) return maze; // すべての処理の終わり
-        const idx = randInt(0, unused.length - 1),
-              _i = unused[idx];
-        unused.splice(idx, 1);
-        if(!maze[_i]){ // 通路の場合のみ
-            while(stack.length) stack.pop();
-            return extend(...toXY(_i));
-        }
-        else return main();
-    };
-    const now = []; // 現在拡張中の壁
-    const extend = async (x, y) => { // 壁延ばし本処理
-        const _i = toI(x, y);
-        now.push(_i);
-        await put(_i);
-        const nexts = [
-            [2, 0],
-            [-2, 0],
-            [0, 2],
-            [0, -2]
-        ].map(([_x, _y]) => [_x + x, _y + y]).filter(([x, y]) => !now.includes(toI(x, y)));
-        if(!nexts.length) return extend(...toXY(stack.pop())); // 四方がすべて現在拡張中の壁の場合
-        else {
-            const next = randArr(nexts);
-            await put(toI(...[x, y].map((v, i) => v + (next[i] - v >> 1)))); // 奇数マス
-            if(maze[toI(...next)]) { // 壁の場合
-                while(now.length) now.pop();
-                return main();
+        for(let i = 0; i < h; i++) {
+            for(let j = 0; j < w; j++) {
+                const _i = toI(...[j, i].map(v => v + 1 << 1));
+                stick.push(_i);
+                maze[_i] = true;
             }
-            stack.push(_i); // 通路の場合
-            return extend(...next);
         }
     }
-    return main();
+    await updateAll(maze);
+    // ランダムな方向に倒す(1行目以外は上方向を禁止，既に壁がある方向は禁止)
+    for(const _i of stick) {
+        const [x, y] = toXY(_i),
+              a = [[1, 0], [0, 1]];
+        if(y === 2) a.push([0, -1]);
+        if(!maze[toI(x - 1, y)]) a.push([-1, 0]);
+        await put(toI(...randArr(a).map((v, i) => v + xy[i])));
+    }
+    return maze;
 };
