@@ -36,7 +36,8 @@ export const fallStick = async ({width, height, update, updateAll}) => {
     await updateAll(maze);
     // ランダムな方向に倒す(1行目以外は上方向を禁止，既に壁がある方向は禁止)
     for(const _i of stick) {
-        const [x, y] = toXY(_i),
+        const xy = toXY(_i),
+              [x, y] = xy,
               a = [[1, 0], [0, 1]];
         if(y === 2) a.push([0, -1]);
         if(!maze[toI(x - 1, y)]) a.push([-1, 0]);
