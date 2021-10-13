@@ -182,7 +182,7 @@
                 }
                 await sleep(inputDelay());
             },
-            update: async (i, v) => {
+            update: async (i, v = true) => {
                 if(g_status !== status) throw 'break';
                 g_maze[i] = v;
                 cvMaze.draw(...toXY(i), !v);
