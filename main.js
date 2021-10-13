@@ -175,17 +175,17 @@
         await func({
             width: g_w,
             height: g_h,
-            init: async maze => {
-                for(const [i, v] of maze.entries()) {
-                    g_maze[i] = v;
-                    cvMaze.draw(...toXY(i), !v);
-                }
-                await sleep(inputDelay());
-            },
             update: async (i, v = true) => {
                 if(g_status !== status) throw 'break';
                 g_maze[i] = v;
                 cvMaze.draw(...toXY(i), !v);
+                await sleep(inputDelay());
+            },
+            updateAll: async maze => {
+                for(const [i, v] of maze.entries()) {
+                    g_maze[i] = v;
+                    cvMaze.draw(...toXY(i), !v);
+                }
                 await sleep(inputDelay());
             }
         });
