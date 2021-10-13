@@ -1,6 +1,6 @@
 import {randInt, randArr} from 'https://rpgen3.github.io/mylib/export/random.mjs';
 const rand = arr => arr[Math.random() * arr.length | 0];
-export const extendWall = async ({width, height, callback}) => {
+export const extendWall = async ({width, height, init, update}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
         const x = i % width,
@@ -10,32 +10,25 @@ export const extendWall = async ({width, height, callback}) => {
     const maze = [...Array(width * height).fill(false)];
     const put = async i => {
         maze[i] = true;
-        await callback(i);
+        await update(i);
     };
     { // 上下の外周を壁に
         const a = width * (height - 1);
-        for(let i = 0; i < width; i++) {
-            await put(i);
-            await put(i + a);
-        }
+        for(let i = 0; i < width; i++) maze[i] = maze[i + a] = true;
     }
     { // 左右の外周を壁に
         const a = width - 1;
         for(let i = 0; i < height; i++) {
             const b = i * width;
-            await put(b);
-            await put(b + a);
+            maze[b] = maze[b + a] = true;
         }
     }
+    await init(maze);
     // x, yともに偶数となる座標を壁伸ばし開始座標(候補)としてリストアップ
     const unused = [];
     {
         const [w, h] = [width, height].map(v => (v >> 1) - 1);
-        for(let i = 0; i < h; i++) {
-            for(let j = 0; j < w; j++) {
-                unused.push([j, i].map(v => v + 1 << 1));
-            }
-        }
+        for(let i = 0; i < h; i++) for(let j = 0; j < w; j++) unused.push([j, i].map(v => v + 1 << 1));
     }
     const stack = [];
     const main = async () => {
