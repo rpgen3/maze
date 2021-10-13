@@ -162,7 +162,7 @@
     const inputDelay = rpgen3.addInputNum(body, {
         label: '表示の遅延時間[ms]',
         save: true,
-        max: 1000,
+        max: 100,
         value: 20
     });
     let g_status = -1;
