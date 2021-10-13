@@ -1,5 +1,5 @@
 import {randArr} from 'https://rpgen3.github.io/mylib/export/random.mjs';
-export const fallStick = async ({width, height, init, update}) => {
+export const fallStick = async ({width, height, update, updateAll}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
         const x = i % width,
@@ -33,7 +33,7 @@ export const fallStick = async ({width, height, init, update}) => {
             }
         }
     }
-    await init(maze);
+    await updateAll(maze);
     // ランダムな方向に倒す(1行目以外は上方向を禁止，既に壁がある方向は禁止)
     for(const xy of arr) {
         const [x, y] = xy,
