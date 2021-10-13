@@ -28,22 +28,22 @@ export const extendWall = async ({width, height, update, updateAll}) => {
     const unused = [];
     {
         const [w, h] = [width, height].map(v => (v >> 1) - 1);
-        for(let i = 0; i < h; i++) for(let j = 0; j < w; j++) unused.push([j, i].map(v => v + 1 << 1));
+        for(let i = 0; i < h; i++) for(let j = 0; j < w; j++) unused.push(toI(...[j, i].map(v => v + 1 << 1)));
     }
     const stack = [];
     const main = async () => {
         if(!unused.length) return maze; // すべての処理の終わり
         const idx = randInt(0, unused.length - 1),
-              xy = unused[idx];
+              _i = unused[idx];
         unused.splice(idx, 1);
-        if(!maze[toI(...xy)]){ // 通路の場合のみ
+        if(!maze[_i]){ // 通路の場合のみ
             while(stack.length) stack.pop();
-            return extend(xy);
+            return extend(...toXY(_i));
         }
         else return main();
     };
     const now = []; // 現在拡張中の壁
-    const extend = async ([x, y]) => { // 壁延ばし本処理
+    const extend = async (x, y) => { // 壁延ばし本処理
         const _i = toI(x, y);
         now.push(_i);
         await put(_i);
@@ -53,7 +53,7 @@ export const extendWall = async ({width, height, update, updateAll}) => {
             [0, 2],
             [0, -2]
         ].map(([_x, _y]) => [_x + x, _y + y]).filter(([x, y]) => !now.includes(toI(x, y)));
-        if(!nexts.length) return extend(toXY(stack.pop())); // 四方がすべて現在拡張中の壁の場合
+        if(!nexts.length) return extend(...toXY(stack.pop())); // 四方がすべて現在拡張中の壁の場合
         else {
             const next = randArr(nexts);
             await put(toI(...[x, y].map((v, i) => v + (next[i] - v >> 1)))); // 奇数マス
@@ -62,7 +62,7 @@ export const extendWall = async ({width, height, update, updateAll}) => {
                 return main();
             }
             stack.push(_i); // 通路の場合
-            return extend(next);
+            return extend(...next);
         }
     }
     return main();
