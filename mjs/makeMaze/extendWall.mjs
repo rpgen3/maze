@@ -60,7 +60,7 @@ export const extendWall = async ({width, height, callback}) => {
             [0, 2],
             [0, -2]
         ].map(([_x, _y]) => [_x + x, _y + y]).filter(([x, y]) => !now.includes(toI(x, y)));
-        if(!nexts.length) return extend(toXY(...stack.pop())); // 四方がすべて現在拡張中の壁の場合
+        if(!nexts.length) return extend(toXY(stack.pop())); // 四方がすべて現在拡張中の壁の場合
         else {
             const next = randArr(nexts);
             await put(toI(...[x, y].map((v, i) => v + (next[i] - v >> 1)))); // 奇数マス
