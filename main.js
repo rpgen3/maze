@@ -175,10 +175,17 @@
         await func({
             width: g_w,
             height: g_h,
-            callback: async i => {
+            init: async maze => {
+                for(const [i, v] of maze.entries()) {
+                    g_maze[i] = v;
+                    cvMaze.draw(...toXY(i), !v);
+                }
+                await sleep(inputDelay());
+            },
+            update: async (i, v) => {
                 if(g_status !== status) throw 'break';
-                g_maze[i] = true;
-                cvMaze.draw(...toXY(i));
+                g_maze[i] = v;
+                cvMaze.draw(...toXY(i), !v);
                 await sleep(inputDelay());
             }
         });
@@ -206,7 +213,7 @@
             goal: xyGoal.slice(),
             width: g_w,
             height: g_h,
-            callback: async i => {
+            update: async i => {
                 if(g_status !== status) throw 'break';
                 cvUsed.draw(...toXY(i));
                 await sleep(inputDelay());
