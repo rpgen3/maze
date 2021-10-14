@@ -126,7 +126,7 @@
         switch(inputType()){
             case 0:
                 cvMaze.draw(x, y, erase);
-                g_maze[x * y] = !erase;
+                g_maze[x + y * g_w] = !erase;
                 break;
             case 1:
                 cvStart.clear().draw(x, y, erase);
