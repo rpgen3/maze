@@ -96,11 +96,11 @@
             return this;
         }
     }
-    const cvMaze = new Canvas('rgba(0, 0, 255, 1)'),
-          cvUsed = new Canvas('rgba(0, 127, 127, 0.5)'),
-          cvRoad = new Canvas('rgba(0, 255, 0, 0.5)'),
-          cvStart = new Canvas('rgba(255, 0, 0, 0.5)'),
-          cvGoal = new Canvas('rgba(127, 0, 127, 0.5)'),
+    const cvMaze = new Canvas('rgba(127, 127, 127, 1)'),
+          cvUsed = new Canvas('rgba(0, 127, 127, 0.4)'),
+          cvRoad = new Canvas('rgba(255, 0, 0, 0.4)'),
+          cvStart = new Canvas('rgba(255, 127, 0, 0.8)'),
+          cvGoal = new Canvas('rgba(127, 0, 255, 0.8)'),
           cvScale = new Canvas('rgba(0, 0, 0, 0.5)');
     const xyStart = [-1, -1],
           xyGoal = [-1, -1];
@@ -225,7 +225,7 @@
             cvRoad.draw(...toXY(i));
             await sleep(inputDelay());
         }
-        msg(`finish ${performance.now() - _}ms`);
+        msg(`finish ${performance.now() - _ | 0}ms`);
     };
     $('<div>').appendTo(body).text('しらみつぶし探索');
     addBtn(body, '深さ優先探索', () => {
