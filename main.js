@@ -208,7 +208,7 @@
         cvUsed.clear();
         cvRoad.clear();
         const result = await func({
-            array: g_maze.slice(),
+            maze: g_maze.slice(),
             start: xyStart.slice(),
             goal: xyGoal.slice(),
             width: g_w,
