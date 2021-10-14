@@ -14,7 +14,7 @@ export const dfs = async ({maze, start, goal, width, height, update}) => {
         if(y !== height - 1) way.push([0, 1]);
         return way.flatMap(([_x, _y]) => {
             const _i = toI(_x + x, _y + y);
-            return maze[_i] || mapNode.has(_i) || stack.includes(_i) ? [] : [_i];
+            return maze[_i] || nodeMap.has(_i) || stack.includes(_i) ? [] : [_i];
         });
     };
     const _start = toI(...start),
@@ -22,7 +22,7 @@ export const dfs = async ({maze, start, goal, width, height, update}) => {
           stack = [_start];
     let node = null,
         found = false;
-    mapNode.clear();
+    nodeMap.clear();
     while(stack.length) {
         const _i = stack.pop();
         await update(_i);
@@ -36,18 +36,18 @@ export const dfs = async ({maze, start, goal, width, height, update}) => {
             stack.push(...abled);
         }
         else {
-            node = mapNode.get(stack[stack.length - 1]).parent;
+            node = nodeMap.get(stack[stack.length - 1]);
         }
     }
     if(found) return [...Node.toArr(node), _goal];
     else throw 'Not found.';
 };
-const mapNode = new Map;
+const nodeMap = new Map;
 class Node {
     constructor(value, parent, children){
         this.value = value;
         this.parent = parent;
-        for(const i of children) mapNode.set(i, this);
+        for(const i of children) nodeMap.set(i, this);
     }
     static toArr(node){
         const arr = [];
