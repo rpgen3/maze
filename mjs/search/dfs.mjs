@@ -36,7 +36,7 @@ export const dfs = async ({maze, start, goal, width, height, update}) => {
             stack.push(...abled);
         }
         else {
-            node = mapRoad.get(now.value);
+            node = mapRoad.get(node.value);
         }
     }
     if(found) return [...Road.toArr(node), _goal];
