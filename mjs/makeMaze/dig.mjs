@@ -60,7 +60,7 @@ export const dig = async ({width, height, update, updateAll, start = [1, 1]}) =>
         if(y !== height - 2) way.push([0, 2]);
         const nexts = way.flatMap(([_x, _y]) => {
             const _i = toI(_x + x, _y + y);
-            return maze[_i] ? [] : [_i];
+            return maze[_i] ? [_i] : [];
         });
         if(!nexts.length) return main(); // 四方がすべて通路の場合
         else {
