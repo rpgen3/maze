@@ -12,7 +12,8 @@
           foot = $('<div>').appendTo(html).hide();
     const rpgen3 = await importAll([
         'input',
-        'util'
+        'util',
+        'random'
     ].map(v => `https://rpgen3.github.io/mylib/export/${v}.mjs`));
     $('<div>').appendTo(head).text('経路探索');
     const addBtn = (h, ttl, func) => $('<button>').appendTo(h).text(ttl).on('click', func);
@@ -55,6 +56,15 @@
         });
         drawScale(g_w, g_h);
         body.add(foot).show();
+    });
+    addBtn(foot, 'ランダム座標設定', () => {
+        for(const [i, v] of [g_w, g_h].entries()) {
+            const _v = v - 1;
+            xyStart[i] = rpgen3.randInt(0, _v);
+            xyGoal[i] = rpgen3.randInt(0, _v);
+        }
+        cvStart.draw(...xyStart);
+        cvGoal.draw(...xyGoal);
     });
     const inputType = rpgen3.addSelect(foot, {
         label: 'パレット',
