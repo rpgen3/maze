@@ -46,12 +46,12 @@ export const extendWall = async ({width, height, update, updateAll}) => {
         const _i = toI(x, y);
         now.push(_i);
         await put(_i);
-        const nexts = [
-            [2, 0],
-            [-2, 0],
-            [0, 2],
-            [0, -2]
-        ].flatMap(([_x, _y]) => {
+        const way = [];
+        if(x !== 0) way.push([-2, 0]);
+        if(x !== width - 1) way.push([2, 0]);
+        if(y !== 0) way.push([0, -2]);
+        if(y !== height - 1) way.push([0, 2]);
+        const nexts = way.flatMap(([_x, _y]) => {
             const _i = toI(_x + x, _y + y);
             return now.includes(_i) ? [] : [_i];
         });
