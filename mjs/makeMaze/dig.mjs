@@ -58,11 +58,16 @@ export const dig = async ({width, height, update, updateAll, start = [1, 1]}) =>
             [-2, 0],
             [0, 2],
             [0, -2]
-        ].map(([_x, _y]) => [_x + x, _y + y]).filter(([x, y]) => (x >= 0 && x < width) && (y >= 0 && y < height) && maze[toI(x, y)]);
+        ].flatMap(([a, b]) => {
+            const [x, y] = [_x + a, _y + b];
+            if(x < 0 || x >= width || y < 0 || y >= height) return [];
+            const _i = toI(x, y);
+            return maze[_i] ? [] : [_i];
+        });
         if(!nexts.length) return main(); // 四方がすべて現在拡張中の通路の場合
         else {
             if(nexts.length > 1) road.push(_i);
-            const next = randArr(nexts);
+            const next = toXY(randArr(nexts));
             await put(toI(...[x, y].map((v, i) => v + (next[i] - v >> 1)))); // 奇数マス
             unpaved--;
             return extend(...next);
