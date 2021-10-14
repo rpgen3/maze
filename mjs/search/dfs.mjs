@@ -14,7 +14,7 @@ export const dfs = async ({maze, start, goal, width, height, update}) => {
         if(y !== height - 1) way.push([0, 1]);
         return way.flatMap(([_x, _y]) => {
             const _i = toI(_x + x, _y + y);
-            return maze[_i] || nodeMap.has(_i) || stack.includes(_i) ? [] : [_i];
+            return maze[_i] || nodeMap.has(_i) ? [] : [_i];
         });
     };
     const _start = toI(...start),
