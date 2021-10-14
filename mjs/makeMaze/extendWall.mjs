@@ -1,5 +1,4 @@
 import {randInt, randArr} from 'https://rpgen3.github.io/mylib/export/random.mjs';
-const rand = arr => arr[Math.random() * arr.length | 0];
 export const extendWall = async ({width, height, update, updateAll}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
