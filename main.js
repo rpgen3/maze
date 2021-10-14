@@ -59,9 +59,8 @@
     });
     addBtn(foot, 'ランダム座標設定', () => {
         for(const [i, v] of [g_w, g_h].entries()) {
-            const _v = v - 1;
-            xyStart[i] = rpgen3.randInt(0, _v);
-            xyGoal[i] = rpgen3.randInt(0, _v);
+            const _v = v - 3 >> 1;
+            for(const xy of [xyStart, xyGoal]) xy[i] = rpgen3.randInt(0, _v) * 2 + 1;
         }
         cvStart.clear().draw(...xyStart);
         cvGoal.clear().draw(...xyGoal);
