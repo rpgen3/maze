@@ -47,7 +47,8 @@
         g_status++;
         [g_w, g_h] = [inputW(), inputH()];
         g_maze = [...Array(g_w * g_h).fill(false)];
-        g_unit = $(window).width() * 0.5 / inputW | 0;
+        const w = $(window).width();
+        g_unit = (w > 300 ? Math.max(300, w * 0.5) : w) / inputW | 0;
         hCv.find('canvas').prop({
             width: g_w * g_unit,
             height: g_h * g_unit
