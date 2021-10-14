@@ -63,8 +63,8 @@
             xyStart[i] = rpgen3.randInt(0, _v);
             xyGoal[i] = rpgen3.randInt(0, _v);
         }
-        cvStart.draw(...xyStart);
-        cvGoal.draw(...xyGoal);
+        cvStart.clear().draw(...xyStart);
+        cvGoal.clear().draw(...xyGoal);
     });
     const inputType = rpgen3.addSelect(foot, {
         label: 'パレット',
