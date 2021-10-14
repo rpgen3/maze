@@ -25,6 +25,7 @@ export const bfs = async ({maze, start, goal, width, height, update}) => {
     nodeMap.clear();
     while(queue.length) {
         const _i = queue.shift();
+        node = nodeMap.has(_i) ? nodeMap.get(_i) : null;
         await update(_i);
         if(_i === _goal) {
             found = true;
@@ -32,11 +33,8 @@ export const bfs = async ({maze, start, goal, width, height, update}) => {
         }
         const abled = getAbled(_i);
         if(abled.length) {
-            node = new Node(_i, node, abled);
+            new Node(_i, node, abled);
             queue.push(...abled);
-        }
-        else {
-            node = nodeMap.get(queue[queue.length - 1]);
         }
     }
     if(found) return [...Node.toArr(node), _goal];
