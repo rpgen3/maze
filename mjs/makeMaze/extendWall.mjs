@@ -51,10 +51,13 @@ export const extendWall = async ({width, height, update, updateAll}) => {
             [-2, 0],
             [0, 2],
             [0, -2]
-        ].map(([_x, _y]) => [_x + x, _y + y]).filter(([x, y]) => !now.includes(toI(x, y)));
+        ].flatMap(([_x, _y]) => {
+            const _i = toI(_x + x, _y + y);
+            return now.includes(_i) ? [] : [_i];
+        });
         if(!nexts.length) return extend(...toXY(stack.pop())); // 四方がすべて現在拡張中の壁の場合
         else {
-            const next = randArr(nexts);
+            const next = toXY(randArr(nexts));
             await put(toI(...[x, y].map((v, i) => v + (next[i] - v >> 1)))); // 奇数マス
             if(maze[toI(...next)]) { // 壁の場合
                 while(now.length) now.pop();
