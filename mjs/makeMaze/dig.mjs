@@ -1,5 +1,4 @@
 import {randInt, randArr} from 'https://rpgen3.github.io/mylib/export/random.mjs';
-const rand = arr => arr[Math.random() * arr.length | 0];
 export const dig = async ({width, height, update, updateAll, start = [1, 1]}) => {
     { // x, yともに奇数となる座標を穴掘り開始座標にする
         const [x, y] = start;
