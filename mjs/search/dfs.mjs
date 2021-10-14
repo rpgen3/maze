@@ -14,7 +14,7 @@ export const dfs = async ({maze, start, goal, width, height, update}) => {
         if(y !== height - 1) way.push([0, 1]);
         return way.flatMap(([_x, _y]) => {
             const _i = toI(_x + x, _y + y);
-            return maze[_i] || mapRoad.has(_i) || stack.includes(_i) ? [] : [_i];
+            return maze[_i] || mapNode.has(_i) || stack.includes(_i) ? [] : [_i];
         });
     };
     const _start = toI(...start),
@@ -22,7 +22,7 @@ export const dfs = async ({maze, start, goal, width, height, update}) => {
           stack = [_start];
     let node = null,
         found = false;
-    mapRoad.clear();
+    mapNode.clear();
     while(stack.length) {
         const _i = stack.pop();
         await update(_i);
@@ -32,22 +32,22 @@ export const dfs = async ({maze, start, goal, width, height, update}) => {
         }
         const abled = getAbled(_i);
         if(abled.length) {
-            node = new Road(_i, node, abled);
+            node = new Node(_i, node, abled);
             stack.push(...abled);
         }
         else {
-            node = mapRoad.get(node.value);
+            node = mapNode.get(stack[stack.length - 1]).parent;
         }
     }
-    if(found) return [...Road.toArr(node), _goal];
+    if(found) return [...Node.toArr(node), _goal];
     else throw 'Not found.';
 };
-const mapRoad = new Map;
-class Road {
+const mapNode = new Map;
+class Node {
     constructor(value, parent, children){
         this.value = value;
         this.parent = parent;
-        for(const i of children) mapRoad.set(i, this);
+        for(const i of children) mapNode.set(i, this);
     }
     static toArr(node){
         const arr = [];
