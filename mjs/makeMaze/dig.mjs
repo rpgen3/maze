@@ -50,21 +50,19 @@ export const dig = async ({width, height, update, updateAll, start = [1, 1]}) =>
         road.splice(idx, 1);
         return extend(...toXY(_i));
     };
-    const extend = async (x, y) => { // 壁延ばし本処理
+    const extend = async (x, y) => { // 穴掘り本処理
         const _i = toI(x, y);
         await put(_i);
-        const nexts = [
-            [2, 0],
-            [-2, 0],
-            [0, 2],
-            [0, -2]
-        ].flatMap(([a, b]) => {
-            const [x, y] = [_x + a, _y + b];
-            if(x < 0 || x >= width || y < 0 || y >= height) return [];
-            const _i = toI(x, y);
+        const way = [];
+        if(x !== 1) way.push([-2, 0]);
+        if(x !== width - 2) way.push([2, 0]);
+        if(y !== 1) way.push([0, -2]);
+        if(y !== height - 2) way.push([0, 2]);
+        const nexts = way.flatMap(([_x, _y]) => {
+            const _i = toI(_x + x, _y + y);
             return maze[_i] ? [] : [_i];
         });
-        if(!nexts.length) return main(); // 四方がすべて現在拡張中の通路の場合
+        if(!nexts.length) return main(); // 四方がすべて通路の場合
         else {
             if(nexts.length > 1) road.push(_i);
             const next = toXY(randArr(nexts));
