@@ -171,6 +171,8 @@
         const _ = performance.now();
         msg(`start ${rpgen3.getTime()}`);
         const status = ++g_status;
+        cvUsed.clear();
+        cvRoad.clear();
         cvMaze.clear();
         clearMaze();
         await func({
