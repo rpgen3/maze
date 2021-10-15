@@ -251,14 +251,7 @@
     addBtn(body, '幅優先探索', () => {
         search(rpgen5.bfs);
     });
-    addBtn(body, 'ダイクストラ法', () => {
-        search(rpgen5.dijkstra);
-    });
-    $('<div>').appendTo(body).text('最良優先探索');
-    addBtn(body, '均一コスト探索', () => {
-        search(rpgen5.ucs);
-    });
-    addBtn(body, '欲張り探索', () => {
+    addBtn(body, '貪欲法', () => {
         search(rpgen5.greedy);
     });
     addBtn(body, 'A*探索', () => {
