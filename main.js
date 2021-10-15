@@ -265,8 +265,6 @@
     const rpgen5 = await importAllSettled([
         'dfs',
         'bfs',
-        'dijkstra',
-        'ucs',
         'greedy',
         'aStar'
     ].map(v => `https://rpgen3.github.io/maze/mjs/search/${v}.mjs`));
