@@ -254,11 +254,14 @@
     addBtn(body, 'ダイクストラ法', () => {
         search(rpgen5.dijkstra);
     });
-    $('<div>').appendTo(body).text('ヒューリスティック探索');
-    addBtn(body, '最良優先探索', () => {
-        search(rpgen5.bestFirst);
+    $('<div>').appendTo(body).text('最良優先探索');
+    addBtn(body, '均一コスト探索', () => {
+        search(rpgen5.ucs);
     });
-    addBtn(body, 'A*アルゴリズム', () => {
+    addBtn(body, '欲張り探索', () => {
+        search(rpgen5.greedy);
+    });
+    addBtn(body, 'A*探索', () => {
         search(rpgen5.aStar);
     });
     const rpgen4 = await importAllSettled([
@@ -270,7 +273,8 @@
         'dfs',
         'bfs',
         'dijkstra',
-        'bestFirst',
+        'ucs',
+        'greedy',
         'aStar'
     ].map(v => `https://rpgen3.github.io/maze/mjs/search/${v}.mjs`));
 })();
