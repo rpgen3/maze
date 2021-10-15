@@ -252,7 +252,7 @@
         search(rpgen5.bfs);
     });
     addBtn(body, '貪欲的なDFS', () => {
-        search(rpgen5.greedy);
+        search(rpgen5.greedyDFS);
     });
     addBtn(body, 'A*探索', () => {
         search(rpgen5.aStar);
