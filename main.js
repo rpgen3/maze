@@ -245,13 +245,13 @@
         msg(`finish ${performance.now() - _ | 0}ms`);
     };
     $('<div>').appendTo(body).text('しらみつぶし探索');
-    addBtn(body, '深さ優先探索', () => {
+    addBtn(body, '深さ優先探索(DFS)', () => {
         search(rpgen5.dfs);
     });
-    addBtn(body, '幅優先探索', () => {
+    addBtn(body, '幅優先探索(BFS)', () => {
         search(rpgen5.bfs);
     });
-    addBtn(body, '貪欲法', () => {
+    addBtn(body, '貪欲的なDFS', () => {
         search(rpgen5.greedy);
     });
     addBtn(body, 'A*探索', () => {
@@ -265,7 +265,7 @@
     const rpgen5 = await importAllSettled([
         'dfs',
         'bfs',
-        'greedy',
+        'greedyDFS',
         'aStar'
     ].map(v => `https://rpgen3.github.io/maze/mjs/search/${v}.mjs`));
 })();
