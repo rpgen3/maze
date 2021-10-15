@@ -58,12 +58,18 @@
         body.add(foot).show();
     });
     addBtn(foot, 'ランダム座標設定', () => {
-        for(const [i, v] of [g_w, g_h].entries()) {
-            const _v = v - 3 >> 1;
-            for(const xy of [xyStart, xyGoal]) xy[i] = rpgen3.randInt(0, _v) * 2 + 1;
+        const list = g_maze.flatMap((v, i) => v ? [] : [i]);
+        for(const v of [xyStart, xyGoal]) {
+            const idx = rpgen3.randInt(0, list.length - 1),
+                  _i = list[idx];
+            list.splice(idx, 1);
+            [v[0], v[1]] = toXY(_i);
         }
         cvStart.clear().draw(...xyStart);
         cvGoal.clear().draw(...xyGoal);
+    }).css({
+        color: 'purple',
+        backgroundColor: 'orange'
     });
     const inputType = rpgen3.addSelect(foot, {
         label: 'パレット',
