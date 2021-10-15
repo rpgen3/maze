@@ -35,7 +35,7 @@ export const greedyDFS = async ({maze, start, goal, width, height, update}) => {
         if(abled.length) {
             const m = new Map;
             for(const v of abled) m.set(v, calcEuclid(...goal, ...toXY(v)));
-            const a = [...m].sort((a, b) => (a[1] < b[1] ? -1 : 1)).map(v => v[0]);
+            const a = [...m].sort((a, b) => b[1] - a[1]).map(v => v[0]);
             node = new Node(_i, node, a);
             stack.push(...a);
         }
