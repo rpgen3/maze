@@ -244,7 +244,7 @@
         }
         msg(`finish ${performance.now() - _ | 0}ms`);
     };
-    $('<div>').appendTo(body).text('しらみつぶし探索');
+    $('<div>').appendTo(body).text('経路探索');
     addBtn(body, '深さ優先探索(DFS)', () => {
         search(rpgen5.dfs);
     });
