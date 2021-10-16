@@ -62,7 +62,7 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
             }
         }
     }
-    if(found) return [...Node.toArr(nodeMap.get(_goal)), _goal];
+    if(found) return Node.toArr(nodeMap.get(_goal));
     else throw 'Not found.';
 };
 const nodeMap = new Map;
