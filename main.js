@@ -272,7 +272,7 @@
         });
         const h = $('<div>').appendTo(body).empty();
         f.elm.on('change', () => f() === Minkowski ? h.show() : h.hide()).trigger('change');
-        const p = rpgen3.addInputNum(body, {
+        const p = rpgen3.addInputNum(h, {
             label: 'P',
             save: true,
             min: -3,
