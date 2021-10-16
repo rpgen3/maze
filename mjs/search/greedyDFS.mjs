@@ -1,5 +1,4 @@
-const calcEuclid = (x, y, _x, _y) => Math.sqrt((_x - x) ** 2 + (_y - y) ** 2);
-export const greedyDFS = async ({maze, start, goal, width, height, update}) => {
+export const greedyDFS = async ({maze, start, goal, width, height, update, heuristic}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
         const x = i % width,
@@ -34,7 +33,7 @@ export const greedyDFS = async ({maze, start, goal, width, height, update}) => {
         const abled = getAbled(_i);
         if(abled.length) {
             const m = new Map;
-            for(const v of abled) m.set(v, calcEuclid(...goal, ...toXY(v)));
+            for(const v of abled) m.set(v, heuristic(...goal, ...toXY(v)));
             const a = [...m].sort((a, b) => b[1] - a[1]).map(v => v[0]);
             node = new Node(_i, node, a);
             stack.push(...a);
