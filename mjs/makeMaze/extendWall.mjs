@@ -23,7 +23,7 @@ export const extendWall = async ({width, height, update, updateAll}) => {
         }
     }
     await updateAll(maze);
-    // x, yともに偶数となる座標を壁伸ばし開始座標(候補)としてリストアップ
+    // x, yともに偶数となる座標を壁延ばし開始座標(候補)としてリストアップ
     const unused = [];
     {
         const [w, h] = [width, height].map(v => (v >> 1) - 1);
