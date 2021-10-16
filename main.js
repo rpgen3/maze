@@ -235,7 +235,8 @@
                 if(g_status !== status) throw 'break';
                 cvUsed.draw(...toXY(i));
                 await sleep(inputDelay());
-            }
+            },
+            heuristic: selectHeuristic()
         });
         for(const i of result) {
             if(g_status !== status) throw 'break';
@@ -256,6 +257,14 @@
     });
     addBtn(body, 'A*探索', () => {
         search(rpgen5.aStar);
+    });
+    const selectHeuristic = rpgen3.addSelect(body, {
+        label: 'ヒューリスティック関数',
+        save: true,
+        list: {
+            'ユークリッド距離': (x, y, _x, _y) => Math.sqrt((_x - x) ** 2 + (_y - y) ** 2),
+            'マンハッタン距離': (x, y, _x, _y) => Math.abs(_x - x) + Math.abs(_y - y)
+        }
     });
     const rpgen4 = await importAllSettled([
         'fallStick',
