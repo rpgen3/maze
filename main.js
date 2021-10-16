@@ -259,7 +259,7 @@
         search(rpgen5.aStar);
     });
     const selectHeuristic = (() => {
-        const Minkowski = (x, y, _x, _y) => ((_x - x) ** p + (_y - y) ** p) ** 1 / p;
+        const Minkowski = (x, y, _x, _y) => ((_x - x) ** p + (_y - y) ** p) ** (1 / p);
         const f = rpgen3.addSelect(body, {
             label: 'ヒューリスティック関数',
             save: true,
