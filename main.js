@@ -258,15 +258,30 @@
     addBtn(body, 'A*探索', () => {
         search(rpgen5.aStar);
     });
-    const selectHeuristic = rpgen3.addSelect(body, {
-        label: 'ヒューリスティック関数',
-        save: true,
-        list: {
-            'マンハッタン距離': (x, y, _x, _y) => Math.abs(_x - x) + Math.abs(_y - y),
-            'ユークリッド距離': (x, y, _x, _y) => Math.sqrt((_x - x) ** 2 + (_y - y) ** 2),
-            'チェビシェフ距離': (x, y, _x, _y) => Math.max(_x - x, _y - y)
-        }
-    });
+    const selectHeuristic = (() => {
+        const Minkowski = (x, y, _x, _y) => ((_x - x) ** p + (_y - y) ** p) ** 1 / p;
+        const f = rpgen3.addSelect(body, {
+            label: 'ヒューリスティック関数',
+            save: true,
+            list: {
+                'マンハッタン距離': (x, y, _x, _y) => Math.abs(_x - x) + Math.abs(_y - y),
+                'ユークリッド距離': (x, y, _x, _y) => Math.sqrt((_x - x) ** 2 + (_y - y) ** 2),
+                'チェビシェフ距離': (x, y, _x, _y) => Math.max(_x - x, _y - y),
+                'ミンコフスキー距離': Minkowski
+            }
+        });
+        const h = $('<div>').appendTo(body).empty();
+        f.elm.on('change', () => f() === Minkowski ? h.show() : h.hide()).trigger('change');
+        const p = rpgen3.addInputNum(body, {
+            label: 'P',
+            save: true,
+            min: -3,
+            max: 3,
+            step: 0.1,
+            value: -1
+        });
+        return f;
+    })();
     const rpgen4 = await importAllSettled([
         'fallStick',
         'extendWall',
