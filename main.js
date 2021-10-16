@@ -255,6 +255,9 @@
     addBtn(body, '貪欲的なDFS', () => {
         search(rpgen5.greedyDFS);
     });
+    addBtn(body, '貪欲的なBFS', () => {
+        search(rpgen5.greedyBFS);
+    });
     addBtn(body, 'A*探索', () => {
         search(rpgen5.aStar);
     });
@@ -291,6 +294,7 @@
         'dfs',
         'bfs',
         'greedyDFS',
+        'greedyBFS',
         'aStar'
     ].map(v => `https://rpgen3.github.io/maze/mjs/search/${v}.mjs`));
 })();
