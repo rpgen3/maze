@@ -49,7 +49,7 @@
         [g_w, g_h] = [inputW(), inputH()];
         g_maze = [...Array(g_w * g_h).fill(false)];
         const w = $(window).width();
-        g_unit = (w > 300 ? Math.max(300, w * 0.3) : w) / inputW | 0;
+        g_unit = Math.min(5, (w > 300 ? Math.max(300, w * 0.3) : w) / inputW | 0);
         hCv.find('canvas').prop({
             width: g_w * g_unit,
             height: g_h * g_unit
@@ -262,8 +262,9 @@
         label: 'ヒューリスティック関数',
         save: true,
         list: {
+            'マンハッタン距離': (x, y, _x, _y) => Math.abs(_x - x) + Math.abs(_y - y),
             'ユークリッド距離': (x, y, _x, _y) => Math.sqrt((_x - x) ** 2 + (_y - y) ** 2),
-            'マンハッタン距離': (x, y, _x, _y) => Math.abs(_x - x) + Math.abs(_y - y)
+            'チェビシェフ距離': (x, y, _x, _y) => Math.max(_x - x, _y - y)
         }
     });
     const rpgen4 = await importAllSettled([
