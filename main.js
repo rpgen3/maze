@@ -213,7 +213,7 @@
     addBtn(body, '棒倒し法', () => {
         makeMaze(rpgen4.fallStick);
     });
-    addBtn(body, '壁伸ばし法', () => {
+    addBtn(body, '壁延ばし法', () => {
         makeMaze(rpgen4.extendWall);
     });
     addBtn(body, '穴掘り法', () => {
