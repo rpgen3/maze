@@ -1,4 +1,4 @@
-const calcEuclid = (x, y, _x, _y) => (_x - x) ** 2 + (_y - y) ** 2;
+const calcEuclid = (x, y, _x, _y) => Math.sqrt((_x - x) ** 2 + (_y - y) ** 2);
 export const greedyDFS = async ({maze, start, goal, width, height, update}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
