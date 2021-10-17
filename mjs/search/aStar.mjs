@@ -32,10 +32,10 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
             return maze[_i] || nodeMap.has(_i) ? [] : [_i];
         });
     };
-    const calcH = i => heuristic(...goal, ...toXY(i)),
-          _start = toI(...start),
+    const _start = toI(...start),
           _goal = toI(...goal),
-          openList = [_start];
+          openList = [_start],
+          calcH = i => heuristic(...goal, ...toXY(i));
     nodeMap.clear();
     new Node(_start, null, 0, calcH(_start));
     let found = false;
