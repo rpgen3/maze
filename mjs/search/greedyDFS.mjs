@@ -1,4 +1,4 @@
-export const greedyDFS = async ({maze, start, goal, width, height, update, heuristic}) => {
+export const greedyDFS = async ({maze, start, goal, width, height, update, heuristic, backtrack = true}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
         const x = i % width,
@@ -19,43 +19,43 @@ export const greedyDFS = async ({maze, start, goal, width, height, update, heuri
     };
     const _start = toI(...start),
           _goal = toI(...goal),
-          stack = [_start];
-    let node = null,
-        found = false;
+          stack = [_start],
+          calcH = i => heuristic(...goal, ...toXY(i));
     nodeMap.clear();
+    new Node(_start, null, calcH(_start));
+    let found = false;
     while(stack.length) {
-        const _i = stack.pop();
+        const _i = stack.pop(),
+              node = nodeMap.get(_i);
         await update(_i);
         if(_i === _goal) {
             found = true;
             break;
         }
         const abled = getAbled(_i);
-        if(abled.length) {
-            const m = new Map;
-            for(const v of abled) m.set(v, heuristic(...goal, ...toXY(v)));
-            const a = [...m].sort((a, b) => b[1] - a[1]).map(v => v[0]);
-            node = new Node(_i, node, a);
-            stack.push(...a);
+        if(!abled.length) {
+            if(backtrack) continue;
+            else break;
         }
-        else {
-            node = nodeMap.get(stack[stack.length - 1]);
-        }
+        const ar = [];
+        for(const i of abled) ar.push(new Node(i, node, calcH(i)));
+        stack.push(...ar.sort((a, b) => b.hCost - a.hCost).map(v => v.index));
     }
-    if(found) return [...Node.toArr(node), _goal];
+    if(found) return Node.toArr(nodeMap.get(_goal));
     else throw 'Not found.';
 };
 const nodeMap = new Map;
 class Node {
-    constructor(value, parent, children){
-        this.value = value;
+    constructor(index, parent, hCost){
+        this.index = index;
         this.parent = parent;
-        for(const i of children) nodeMap.set(i, this);
+        this.hCost = hCost;
+        nodeMap.set(index, this);
     }
     static toArr(node){
         const arr = [];
         while(node !== null) {
-            arr.unshift(node.value);
+            arr.unshift(node.index);
             node = node.parent;
         }
         return arr;
