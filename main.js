@@ -133,16 +133,38 @@
         }
         ctx.stroke();
     };
-    cvScale.cv.bind('contextmenu', () => false).on('mousedown mousemove touchstart touchmove', ({offsetX, offsetY, buttons, which}) => {
+    const lerp = (x, y, _x, _y) => {
+        const a = _x - x,
+              b = _y - y,
+              len = Math.max(...[a, b].map(Math.abs)),
+              _a = a / len,
+              _b = b / len;
+        return [...new Array(len).keys()].map(i => [
+            i * _a + x,
+            i * _b + y
+        ].map(Math.round));
+    };
+    const xyLast = [-1, -1],
+          deltaTime = 100;
+    let lastTime = -1;
+    cvScale.cv.bind('contextmenu', () => false)
+        .on('mousedown mousemove touchstart touchmove', ({offsetX, offsetY, buttons, which}) => {
         if(!which) return;
         const [x, y] = [offsetX, offsetY].map(v => v / g_unit | 0),
               erase = buttons === 2 || eraseFlag();
         if(log.unchanged(x, y, erase)) return;
         switch(inputType()){
-            case 0:
-                cvMaze.draw(x, y, erase);
-                g_maze[x + y * g_w] = !erase;
+            case 0: {
+                const now = performance.now();
+                for(const [_x, _y] of now - lastTime > deltaTime ? [[x, y]] : lerp(x, y, ...xyLast)) {
+                    cvMaze.draw(_x, _y, erase);
+                    g_maze[_x + _y * g_w] = !erase;
+                }
+                xyLast[0] = x;
+                xyLast[1] = y;
+                lastTime = now;
                 break;
+            }
             case 1:
                 cvStart.clear().draw(x, y, erase);
                 if(erase) xyStart[0] = xyStart[1] = -1;
@@ -160,6 +182,7 @@
                 }
                 break;
         }
+        return false;
     });
     const log = new class {
         constructor(num){
@@ -272,7 +295,7 @@
         }
     });
     const selectHeuristic = (() => {
-        const Minkowski = (x, y, _x, _y) => (Math.abs(_x - x) ** p + Math.abs(_y - y) ** p) ** (1 / p);
+        const calcMinkowski = (x, y, _x, _y) => (Math.abs(_x - x) ** p + Math.abs(_y - y) ** p) ** (1 / p);
         const f = rpgen3.addSelect(body, {
             label: 'ヒューリスティック関数',
             save: true,
@@ -280,11 +303,11 @@
                 'マンハッタン距離': (x, y, _x, _y) => Math.abs(_x - x) + Math.abs(_y - y),
                 'ユークリッド距離': (x, y, _x, _y) => Math.sqrt((_x - x) ** 2 + (_y - y) ** 2),
                 'チェビシェフ距離': (x, y, _x, _y) => Math.max(_x - x, _y - y),
-                'ミンコフスキー距離': Minkowski
+                'ミンコフスキー距離': calcMinkowski
             }
         });
         const h = $('<div>').appendTo(body).empty();
-        f.elm.on('change', () => f() === Minkowski ? h.show() : h.hide()).trigger('change');
+        f.elm.on('change', () => f() === calcMinkowski ? h.show() : h.hide()).trigger('change');
         const p = rpgen3.addInputNum(h, {
             label: 'P',
             save: true,
