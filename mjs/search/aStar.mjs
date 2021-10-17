@@ -18,7 +18,6 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
             _node = node;
         }
         openList.splice(_i, 1);
-        closeList.add(_i);
         return _node;
     };
     const getAbled = i => {
@@ -30,14 +29,13 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
         if(y !== height - 1) way.push([0, 1]);
         return way.flatMap(([_x, _y]) => {
             const _i = toI(_x + x, _y + y);
-            return maze[_i] || closeList.has(_i) ? [] : [_i];
+            return maze[_i] || nodeMap.has(_i) ? [] : [_i];
         });
     };
     const calcH = i => heuristic(...goal, ...toXY(i));
     const _start = toI(...start),
           _goal = toI(...goal);
-    const openList = [_start],
-          closeList = new Set;
+    const openList = [_start];
     nodeMap.clear();
     new Node(_start, null, 0, calcH(_start));
     let found = false;
