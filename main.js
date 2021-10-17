@@ -219,7 +219,7 @@
     addBtn(body, '穴掘り法', () => {
         makeMaze(rpgen4.dig);
     });
-    const search = async func => {
+    const search = async (func, backtrack) => {
         const _ = performance.now();
         msg(`start ${rpgen3.getTime()}`);
         const status = ++g_status;
@@ -236,7 +236,8 @@
                 cvUsed.draw(...toXY(i));
                 await sleep(inputDelay());
             },
-            heuristic: selectHeuristic()
+            heuristic: selectHeuristic(),
+            backtrack
         });
         for(const i of result) {
             if(g_status !== status) throw 'break';
@@ -252,11 +253,23 @@
     addBtn(body, '幅優先探索(BFS)', () => {
         search(rpgen5.bfs);
     });
+    addBtn(body, '貪欲法', () => {
+        search(rpgen5.greedyDFS, false);
+    });
     addBtn(body, '貪欲的なDFS', () => {
-        search(rpgen5.greedyDFS);
+        search(rpgen5.greedyDFS, true);
     });
     addBtn(body, 'A*探索', () => {
         search(rpgen5.aStar);
+    });
+    addBtn(body, '貪欲法 + A*探索', async () => {
+        let status = g_status + 1;
+        try {
+            await search(rpgen5.greedyDFS, false);
+        }
+        catch {
+            if(status === g_status) await search(rpgen5.aStar);
+        }
     });
     const selectHeuristic = (() => {
         const Minkowski = (x, y, _x, _y) => (Math.abs(_x - x) ** p + Math.abs(_y - y) ** p) ** (1 / p);
