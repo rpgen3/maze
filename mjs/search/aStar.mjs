@@ -18,7 +18,7 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
             _node = node;
         }
         openList.splice(_i, 1);
-        closeList.push(_i);
+        closeList.add(_i);
         return _node;
     };
     const getAbled = i => {
@@ -30,16 +30,15 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
         if(y !== height - 1) way.push([0, 1]);
         return way.flatMap(([_x, _y]) => {
             const _i = toI(_x + x, _y + y);
-            return maze[_i] ? [] : [_i];
+            return maze[_i] || closeList.has(_i) ? [] : [_i];
         });
     };
     const calcH = i => heuristic(...goal, ...toXY(i));
     const _start = toI(...start),
-          _goal = toI(...goal);
-    const openList = [_start],
-          closeList = [];
-    nodeMap.clear();
-    nodeMap.set(_start, new Node(_start, null, 0, calcH(_start)));
+          _goal = toI(...goal),
+          openList = [_start];
+    closeList.clear();
+    new Node(_start, null, 0, calcH(_start));
     let found = false;
     while(openList.length) {
         const node = getMin(),
@@ -53,19 +52,15 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
         if(abled.length) {
             const g = gCost + 1;
             for(const i of abled) {
-                const last = nodeMap.get(i),
-                      h = last ? last.hCost : calcH(i),
-                      _node = new Node(i, node, g, h);
-                if(last && last.cost <= _node.cost) continue;
-                nodeMap.set(i, _node);
                 openList.push(i);
+                new Node(i, node, g, calcH(i));
             }
         }
     }
     if(found) return Node.toArr(nodeMap.get(_goal));
     else throw 'Not found.';
 };
-const nodeMap = new Map;
+const closeList = new Set;
 class Node {
     constructor(index, parent, gCost, hCost){
         this.index = index;
