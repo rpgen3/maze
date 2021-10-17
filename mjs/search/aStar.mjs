@@ -48,12 +48,11 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
             break;
         }
         const abled = getAbled(index);
-        if(abled.length) {
-            const g = gCost + 1;
-            for(const i of abled) {
-                new Node(i, node, g, calcH(i));
-                openList.push(i);
-            }
+        if(!abled.length) continue;
+        const g = gCost + 1;
+        for(const i of abled) {
+            new Node(i, node, g, calcH(i));
+            openList.push(i);
         }
     }
     if(found) return Node.toArr(nodeMap.get(_goal));
