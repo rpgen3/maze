@@ -244,7 +244,7 @@
     addBtn(body, '穴掘り法', () => {
         makeMaze(rpgen4.dig);
     });
-    const search = async (func, backtrack) => {
+    const search = async (func, weight = [1, 1]) => {
         const _ = performance.now();
         msg(`start ${rpgen3.getTime()}`);
         const status = ++g_status;
@@ -262,7 +262,7 @@
                 await sleep(inputDelay());
             },
             heuristic: selectHeuristic(),
-            backtrack
+            weight
         });
         for(const i of result) {
             if(g_status !== status) throw 'break';
@@ -278,24 +278,24 @@
     addBtn(body, '幅優先探索(BFS)', () => {
         search(rpgen5.bfs);
     });
-    addBtn(body, '貪欲法', () => {
-        search(rpgen5.greedyDFS, false);
-    });
-    addBtn(body, '貪欲的なDFS', () => {
-        search(rpgen5.greedyDFS, true);
+    addBtn(body, '最良優先探索', () => {
+        search(rpgen5.greedyDFS, [1, 0]);
     });
     addBtn(body, 'A*探索', () => {
-        search(rpgen5.aStar);
+        search(rpgen5.aStar, aStarInputs.map(v => v()));
     });
-    addBtn(body, '貪欲法 + A*探索', async () => {
-        let status = g_status + 1;
-        try {
-            await search(rpgen5.greedyDFS, false);
-        }
-        catch {
-            if(status === g_status) await search(rpgen5.aStar);
-        }
+    const aStarConfig = rpgen3.addInputBool(body, {
+        label: '重み付きA*探索'
     });
+    aStarConfig.elm.on('change', () => aStarConfig() ? aStarH.show() : aStarH.hide());
+    const aStarH = $('<div>').appendTo(body).hide();
+    const aStarInputs = ['現時点までの距離G', 'ゴールまでの推定値H'].map(label => rpgen3.addInputNumber(aStarH, {
+        label,
+        value: 1,
+        step: 0.1,
+        min: 0,
+        max: 2
+    }));
     const selectHeuristic = (() => {
         const calcMinkowski = (x, y, _x, _y) => (Math.abs(_x - x) ** p + Math.abs(_y - y) ** p) ** (1 / p);
         const f = rpgen3.addSelect(body, {
@@ -328,7 +328,6 @@
     const rpgen5 = await importAllSettled([
         'dfs',
         'bfs',
-        'greedyDFS',
         'aStar'
     ].map(v => `https://rpgen3.github.io/maze/mjs/search/${v}.mjs`));
 })();
