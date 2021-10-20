@@ -279,7 +279,7 @@
         search(rpgen5.bfs);
     });
     addBtn(body, '最良優先探索', () => {
-        search(rpgen5.greedyDFS, [1, 0]);
+        search(rpgen5.aStar, [1, 0]);
     });
     addBtn(body, 'A*探索', () => {
         search(rpgen5.aStar, aStarInputs.map(v => v()));
