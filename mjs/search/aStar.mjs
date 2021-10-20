@@ -1,4 +1,4 @@
-export const aStar = async ({maze, start, goal, width, height, update, heuristic, weight = [1, 1]}) => {
+export const aStar = async ({maze, start, goal, width, height, update, heuristic, weight = [1, 1], stubborn = false}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
         const x = i % width,
@@ -39,10 +39,15 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
           calcH = i => heuristic(...goal, ...toXY(i)) * wH;
     nodeMap.clear();
     new Node(_start, null, 0, calcH(_start));
-    let found = false;
+    let found = false,
+        min = Infinity;
     while(openList.length) {
         const node = getMin(),
-              {index, gCost} = node;
+              {index, gCost, cost} = node;
+        if(stubborn) {
+            if(min < cost) throw 'Not found.';
+            min = cost;
+        }
         await update(index);
         if(index === _goal) {
             found = true;
