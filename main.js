@@ -244,7 +244,7 @@
     addBtn(body, '穴掘り法', () => {
         makeMaze(rpgen4.dig);
     });
-    const search = async (func, weight = [1, 1]) => {
+    const search = async (func, weight = [1, 1], stubborn = false) => {
         const _ = performance.now();
         msg(`start ${rpgen3.getTime()}`);
         const status = ++g_status;
@@ -262,7 +262,7 @@
                 await sleep(inputDelay());
             },
             heuristic: selectHeuristic(),
-            weight
+            weight, stubborn
         });
         for(const i of result) {
             if(g_status !== status) throw 'break';
@@ -283,6 +283,15 @@
     });
     addBtn(body, 'A*探索', () => {
         search(rpgen5.aStar, aStarInputs.map(v => v()));
+    });
+    addBtn(body, '最良優先探索 + A*探索', async () => {
+        let status = g_status + 1;
+        try {
+            await search(rpgen5.aStar, [0, 1], true);
+        }
+        catch {
+            if(status === g_status) await search(rpgen5.aStar, [1, 1]);
+        }
     });
     const aStarConfig = rpgen3.addInputBool(body, {
         label: '重み付きA*探索'
