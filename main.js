@@ -289,7 +289,7 @@
     });
     aStarConfig.elm.on('change', () => aStarConfig() ? aStarH.show() : aStarH.hide());
     const aStarH = $('<div>').appendTo(body).hide();
-    const aStarInputs = ['現時点までの距離G', 'ゴールまでの推定値H'].map(label => rpgen3.addInputNumber(aStarH, {
+    const aStarInputs = ['現時点までの距離G', 'ゴールまでの推定値H'].map(label => rpgen3.addInputNum(aStarH, {
         label,
         value: 1,
         step: 0.1,
