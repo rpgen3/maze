@@ -249,12 +249,12 @@
         label: '表示の遅延時間[ms]',
         save: true,
         max: 100,
-        min: -1,
+        min: 0,
         value: 20
     });
     const wait = () => {
         const d = inputDelay();
-        if(d !== -1) return sleep(d);
+        if(d) return sleep(d);
     };
     let g_status = -1;
     const makeMaze = async func => {
