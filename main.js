@@ -124,6 +124,25 @@
         position: 'relative',
         display: 'inline-block'
     });
+    addBtn(foot, '画像として保存', () => {
+        const cv = $('<canvas>').prop({
+            width: g_w * g_unit,
+            height: g_h * g_unit
+        }),
+              ctx = cv.get(0).getContext('2d');
+        for(const {cv} of [
+            cvMaze,
+            cvUsed,
+            cvRoad,
+            cvStart,
+            cvGoal,
+            hideScale() ? [] : cvScale
+        ].flat()) ctx.drawImage(cv.get(0), 0, 0);
+        $('<a>').attr({
+            href: cv.get(0).toDataURL(),
+            download: 'maze.png'
+        }).get(0).click();
+    });
     class Canvas {
         constructor(color){
             this.color = color;
