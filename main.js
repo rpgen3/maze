@@ -249,8 +249,13 @@
         label: '表示の遅延時間[ms]',
         save: true,
         max: 100,
+        min: -1,
         value: 20
     });
+    const wait = () => {
+        const d = inputDelay();
+        if(d !== -1) return sleep(d);
+    };
     let g_status = -1;
     const makeMaze = async func => {
         const _ = performance.now();
@@ -267,14 +272,14 @@
                 if(g_status !== status) throw 'break';
                 g_maze[i] = v;
                 cvMaze.draw(...toXY(i), !v);
-                await sleep(inputDelay());
+                await wait();
             },
             updateAll: async maze => {
                 for(const [i, v] of maze.entries()) {
                     g_maze[i] = v;
                     cvMaze.draw(...toXY(i), !v);
                 }
-                await sleep(inputDelay());
+                await wait();
             }
         });
         msg(`finish ${performance.now() - _ | 0}ms`);
@@ -304,7 +309,7 @@
             update: async i => {
                 if(g_status !== status) throw 'break';
                 cvUsed.draw(...toXY(i));
-                await sleep(inputDelay());
+                await wait();
             },
             heuristic: selectHeuristic(),
             weight, giveup
@@ -312,7 +317,7 @@
         for(const i of result) {
             if(g_status !== status) throw 'break';
             cvRoad.draw(...toXY(i));
-            await sleep(inputDelay());
+            await wait();
         }
         msg(`finish ${performance.now() - _ | 0}ms`);
     };
