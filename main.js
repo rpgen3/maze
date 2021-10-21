@@ -182,8 +182,8 @@
           deltaTime = 100;
     let lastTime = -1;
     cvScale.cv.bind('contextmenu', () => false)
-        .on('mousedown mousemove touchstart touchmove', ({offsetX, offsetY, buttons, which, preventDefault}) => {
-        preventDefault();
+        .on('mousedown mousemove touchstart touchmove', ({offsetX, offsetY, buttons, which, originalEvent}) => {
+        originalEvent.preventDefault();
         if(!which) return;
         const [x, y] = [offsetX, offsetY].map(v => v / g_unit | 0),
               erase = buttons === 2 || eraseFlag();
