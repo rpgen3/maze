@@ -375,13 +375,15 @@
         'ゴールまでの推定値H'
     ].map(label => rpgen3.addInputNum(aH, {
         label,
+        save: true,
         value: 1,
         step: 0.1,
         min: 0,
         max: 2
     }));
     const isGiveup = rpgen3.addInputBool(aH, {
-        label: '行き詰ったとき探索を諦める'
+        label: '最小評価を選べなかったとき探索を諦める',
+        save: true
     });
     const selectHeuristic = (() => {
         const calcMinkowski = (x, y, _x, _y) => (Math.abs(_x - x) ** p + Math.abs(_y - y) ** p) ** (1 / p);
