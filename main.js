@@ -51,8 +51,9 @@
         g_maze = [...Array(g_w * g_h).fill(false)];
         const w = $(window).width();
         g_unit = -1;
-        if(w > 500) g_unit = Math.max(500, w * 0.5) / inputW | 0;
-        if(g_unit < 5) g_unit = w / inputW | 0;
+        const divide = 0.9 / inputW;
+        if(w > 500) g_unit = Math.max(500, w * 0.5) * divide | 0;
+        if(g_unit < 5) g_unit = w * divide | 0;
         hCv.find('canvas').prop({
             width: g_w * g_unit,
             height: g_h * g_unit
@@ -60,6 +61,10 @@
         drawScale(g_w, g_h);
         body.add(foot).show();
     });
+    const hideOther = rpgen3.addInputBool(foot, {
+        label: '描画UI以外を非表示'
+    });
+    hideOther.elm.on('change', () => head.add(body)[hideOther() ? 'hide' : 'show']());
     const inputType = rpgen3.addSelect(foot, {
         label: 'パレット',
         list: {
@@ -183,19 +188,21 @@
     let lastTime = -1;
     cvScale.cv.bind('contextmenu', () => false)
         .on('mousedown mousemove touchstart touchmove', e => {
-        const {offsetX, offsetY, buttons, which, type, originalEvent} = e;
         e.preventDefault();
-        let _x = offsetX,
-            _y = offsetY;
+        const {clientX, clientY, buttons, which, type, originalEvent} = e;
+        let _x = clientX,
+            _y = clientY;
         if(type.includes('touch')){
-            const {left, top} = originalEvent.target.getBoundingClientRect(),
-                  {pageXOffset, pageYOffset} = window,
-                  {clientX, clientY} = originalEvent.touches[0];
-            _x = clientX - pageXOffset - left;
-            _y = clientY - pageYOffset - top;
+            const {clientX, clientY} = originalEvent.touches[0];
+            _x = clientX;
+            _y = clientY;
         }
         else if(!which) return;
-        const [x, y] = [_x, _y].map(v => v / g_unit | 0),
+        const {left, top} = originalEvent.target.getBoundingClientRect(),
+              [x, y] = [
+                  _x - left,
+                  _y - top
+              ].map(v => v / g_unit | 0),
               erase = buttons === 2 || eraseFlag();
         if(log.unchanged(x, y, erase)) return;
         switch(inputType()){
