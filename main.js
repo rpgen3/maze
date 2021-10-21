@@ -7,9 +7,9 @@
         padding: '1em',
         'user-select': 'none'
     });
-    const head = $('<div>').appendTo(html),
-          body = $('<div>').appendTo(html).hide(),
-          foot = $('<div>').appendTo(html).hide();
+    const head = $('<dl>').appendTo(html),
+          body = $('<dl>').appendTo(html).hide(),
+          foot = $('<dl>').appendTo(html).hide();
     const rpgen3 = await importAll([
         'input',
         'util',
@@ -59,20 +59,6 @@
         drawScale(g_w, g_h);
         body.add(foot).show();
     });
-    addBtn(foot, 'ランダム座標設定', () => {
-        const list = g_maze.flatMap((v, i) => v ? [] : [i]);
-        for(const v of [xyStart, xyGoal]) {
-            const idx = rpgen3.randInt(0, list.length - 1),
-                  _i = list[idx];
-            list.splice(idx, 1);
-            [v[0], v[1]] = toXY(_i);
-        }
-        cvStart.clear().draw(...xyStart);
-        cvGoal.clear().draw(...xyGoal);
-    }).css({
-        color: 'purple',
-        backgroundColor: 'orange'
-    });
     const inputType = rpgen3.addSelect(foot, {
         label: 'パレット',
         list: {
@@ -88,6 +74,25 @@
         label: '目盛りを非表示'
     });
     hideScale.elm.on('change', () => cvScale.cv.css('opacity', Number(!hideScale())));
+    const hMacro = $('<div>').appendTo(foot);
+    addBtn(hMacro, 'ランダム座標', () => {
+        const list = g_maze.flatMap((v, i) => v ? [] : [i]);
+        for(const v of [xyStart, xyGoal]) {
+            const idx = rpgen3.randInt(0, list.length - 1),
+                  _i = list[idx];
+            list.splice(idx, 1);
+            [v[0], v[1]] = toXY(_i);
+        }
+        cvStart.clear().draw(...xyStart);
+        cvGoal.clear().draw(...xyGoal);
+    });
+    addBtn(hMacro, '線を引く', () => {
+        const erase = eraseFlag();
+        for(const [_x, _y] of lerp(...new Array(2).fill().flatMap(() => toXY(rpgen3.randInt(0, g_maze.length - 1))))) {
+            cvMaze.draw(_x, _y, erase);
+            g_maze[_x + _y * g_w] = !erase;
+        }
+    });
     const hCv = $('<div>').appendTo(foot).css({
         position: 'relative',
         display: 'inline-block'
@@ -236,7 +241,7 @@
     };
     $('<div>').appendTo(body).text('迷路生成');
     addBtn(body, '棒倒し法', () => {
-        makeMaze(rpgen4.fallStick);
+        makeMaze(rpgen4.fellDown);
     });
     addBtn(body, '壁延ばし法', () => {
         makeMaze(rpgen4.extendWall);
@@ -244,7 +249,7 @@
     addBtn(body, '穴掘り法', () => {
         makeMaze(rpgen4.dig);
     });
-    const search = async (func, weight = [1, 1], stubborn = false) => {
+    const search = async (func, weight = [1, 1], giveup = false) => {
         const _ = performance.now();
         msg(`start ${rpgen3.getTime()}`);
         const status = ++g_status;
@@ -262,7 +267,7 @@
                 await sleep(inputDelay());
             },
             heuristic: selectHeuristic(),
-            weight, stubborn
+            weight, giveup
         });
         for(const i of result) {
             if(g_status !== status) throw 'break';
@@ -282,7 +287,7 @@
         search(rpgen5.aStar, [0, 1]);
     });
     addBtn(body, 'A*探索', () => {
-        search(rpgen5.aStar, aStarInputs.map(v => v()));
+        search(rpgen5.aStar);
     });
     addBtn(body, '最良優先探索 + A*探索', async () => {
         let status = g_status + 1;
@@ -290,21 +295,30 @@
             await search(rpgen5.aStar, [0, 1], true);
         }
         catch {
-            if(status === g_status) await search(rpgen5.aStar, [1, 1]);
+            if(status === g_status) await search(rpgen5.aStar);
         }
     });
-    const aStarConfig = rpgen3.addInputBool(body, {
-        label: '重み付きA*探索'
+    addBtn(body, 'A探索', () => {
+        search(rpgen5.aStar, aInputs.map(v => v()), isGiveup());
     });
-    aStarConfig.elm.on('change', () => aStarConfig() ? aStarH.show() : aStarH.hide());
-    const aStarH = $('<div>').appendTo(body).hide();
-    const aStarInputs = ['現時点までの距離G', 'ゴールまでの推定値H'].map(label => rpgen3.addInputNum(aStarH, {
+    const aConfig = rpgen3.addInputBool(body, {
+        label: 'A探索の設定'
+    });
+    aConfig.elm.on('change', () => aConfig() ? aH.show() : aH.hide());
+    const aH = $('<div>').appendTo(body).hide();
+    const aInputs = [
+        '現時点までの距離G',
+        'ゴールまでの推定値H'
+    ].map(label => rpgen3.addInputNum(aH, {
         label,
         value: 1,
         step: 0.1,
         min: 0,
         max: 2
     }));
+    const isGiveup = rpgen3.addInputBool(aH, {
+        label: '行き詰ったとき探索を諦める'
+    });
     const selectHeuristic = (() => {
         const calcMinkowski = (x, y, _x, _y) => (Math.abs(_x - x) ** p + Math.abs(_y - y) ** p) ** (1 / p);
         const f = rpgen3.addSelect(body, {
@@ -330,7 +344,7 @@
         return f;
     })();
     const rpgen4 = await importAllSettled([
-        'fallStick',
+        'fellDown',
         'extendWall',
         'dig'
     ].map(v => `https://rpgen3.github.io/maze/mjs/makeMaze/${v}.mjs`));
