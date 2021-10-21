@@ -1,4 +1,4 @@
-export const aStar = async ({maze, start, goal, width, height, update, heuristic, weight = [1, 1], stubborn = false}) => {
+export const aStar = async ({maze, start, goal, width, height, update, heuristic, weight = [1, 1], giveup = false}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
         const x = i % width,
