@@ -36,6 +36,7 @@
         g_w = -1,
         g_h = -1,
         g_unit = -1;
+    const toI = (x, y) => x + y * g_w;
     const toXY = i => {
         const x = i % g_w,
               y = i / g_w | 0;
@@ -75,6 +76,38 @@
     });
     hideScale.elm.on('change', () => cvScale.cv.css('opacity', Number(!hideScale())));
     const hMacro = $('<div>').appendTo(foot);
+    addBtn(hMacro, '拡大', () => {
+        const maze = [...Array(g_w * g_h).fill(false)],
+              [w, h] = [g_w, g_h].map(v => (v >> 1) + 1);
+        cvMaze.clear();
+        for(let y = 0; y < h; y++) {
+            for(let x = 0; x < w; x++) {
+                const i = toI(x, y),
+                      v = g_maze[i];
+                if(!v) continue;
+                const way = [[0,0]],
+                      a = x < w - 1,
+                      b = y < h - 1;
+                if(a) way.push([1, 0]);
+                if(b) way.push([0, 1]);
+                if(a && b) way.push([1, 1]);
+                const [x2, y2] = [x, y].map(v => v << 1);
+                for(const [a, b] of way) {
+                    const [x, y] = [x2 + a, y2 + b];
+                    maze[toI(x, y)] = v;
+                    cvMaze.draw(x, y);
+                }
+            }
+        }
+        for(const [i, v] of maze.entries()) g_maze[i] = v;
+    });
+    addBtn(hMacro, '線を引く', () => {
+        const erase = eraseFlag();
+        for(const [_x, _y] of lerp(...new Array(2).fill().flatMap(() => toXY(rpgen3.randInt(0, g_maze.length - 1))))) {
+            cvMaze.draw(_x, _y, erase);
+            g_maze[_x + _y * g_w] = !erase;
+        }
+    });
     addBtn(hMacro, 'ランダム座標', () => {
         const list = g_maze.flatMap((v, i) => v ? [] : [i]);
         for(const v of [xyStart, xyGoal]) {
@@ -85,13 +118,6 @@
         }
         cvStart.clear().draw(...xyStart);
         cvGoal.clear().draw(...xyGoal);
-    });
-    addBtn(hMacro, '線を引く', () => {
-        const erase = eraseFlag();
-        for(const [_x, _y] of lerp(...new Array(2).fill().flatMap(() => toXY(rpgen3.randInt(0, g_maze.length - 1))))) {
-            cvMaze.draw(_x, _y, erase);
-            g_maze[_x + _y * g_w] = !erase;
-        }
     });
     const hCv = $('<div>').appendTo(foot).css({
         position: 'relative',
@@ -111,6 +137,7 @@
         draw(x, y, isErase){
             this.ctx.fillStyle = this.color;
             this.ctx[isErase ? 'clearRect' : 'fillRect'](...[x, y, 1, 1].map(v => v * g_unit));
+            return this;
         }
         clear(){
             const {width, height} = this.ctx.canvas;
@@ -165,7 +192,7 @@
                 const now = performance.now();
                 for(const [_x, _y] of now - lastTime > deltaTime ? [[x, y]] : lerp(x, y, ...xyLast)) {
                     cvMaze.draw(_x, _y, erase);
-                    g_maze[_x + _y * g_w] = !erase;
+                    g_maze[toI(_x, _y)] = !erase;
                 }
                 xyLast[0] = x;
                 xyLast[1] = y;
