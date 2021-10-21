@@ -183,10 +183,19 @@
     let lastTime = -1;
     cvScale.cv.bind('contextmenu', () => false)
         .on('mousedown mousemove touchstart touchmove', e => {
-        const {offsetX, offsetY, buttons, which} = e;
+        const {offsetX, offsetY, buttons, which, type, originalEvent} = e;
         e.preventDefault();
-        if(!which) return;
-        const [x, y] = [offsetX, offsetY].map(v => v / g_unit | 0),
+        let _x = offsetX,
+            _y = offsetY;
+        if(type.includes('touch')){
+            const {left, top} = originalEvent.target.getBoundingClientRect(),
+                  {pageXOffset, pageYOffset} = window,
+                  {clientX, clientY} = originalEvent.touches[0];
+            _x = clientX - pageXOffset - left;
+            _y = clientY - pageYOffset - top;
+        }
+        else if(!which) return;
+        const [x, y] = [_x, _y].map(v => v / g_unit | 0),
               erase = buttons === 2 || eraseFlag();
         if(log.unchanged(x, y, erase)) return;
         switch(inputType()){
