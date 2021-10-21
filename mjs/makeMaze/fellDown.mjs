@@ -1,5 +1,5 @@
 import {randArr} from 'https://rpgen3.github.io/mylib/export/random.mjs';
-export const fallStick = async ({width, height, update, updateAll}) => {
+export const fellDown = async ({width, height, update, updateAll}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
         const x = i % width,
