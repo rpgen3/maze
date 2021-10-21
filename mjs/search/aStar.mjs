@@ -44,7 +44,7 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
     while(openList.length) {
         const node = getMin(),
               {index, gCost, cost} = node;
-        if(stubborn) {
+        if(giveup) {
             if(min < cost) throw 'Not found.';
             min = cost;
         }
