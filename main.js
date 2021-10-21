@@ -61,10 +61,6 @@
         drawScale(g_w, g_h);
         body.add(foot).show();
     });
-    const hideOther = rpgen3.addInputBool(foot, {
-        label: '描画UI以外を非表示'
-    });
-    hideOther.elm.on('change', () => head.add(body)[hideOther() ? 'hide' : 'show']());
     const inputType = rpgen3.addSelect(foot, {
         label: 'パレット',
         list: {
