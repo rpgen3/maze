@@ -124,7 +124,7 @@
         position: 'relative',
         display: 'inline-block'
     });
-    addBtn(foot, '画像として保存', () => {
+    addBtn($('<div>').appendTo(foot), '画像として保存', () => {
         const cv = $('<canvas>').prop({
             width: g_w * g_unit,
             height: g_h * g_unit
