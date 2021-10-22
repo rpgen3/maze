@@ -19,6 +19,12 @@ export class LayeredCanvas {
         this.ctx.clearRect(0, 0, width, height);
         return this;
     }
+    onDraw(callback, isErase){
+        onDraw(this, callback, isErase);
+    }
+    drawScale(){
+        drawScale(this);
+    }
     static init(elm){
         $('<canvas>').appendTo(elm).css({
             position: 'absolute',
@@ -40,12 +46,6 @@ export class LayeredCanvas {
         g_w = w;
         g_h = h;
         return this;
-    }
-    static get onDraw(){
-        return onDraw;
-    }
-    static get drawScale(){
-        return drawScale;
     }
 }
 const onDraw = (cv, callback, isErase = () => false) => cv.cv
