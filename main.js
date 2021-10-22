@@ -200,8 +200,7 @@
     const xyLast = [-1, -1],
           deltaTime = 100;
     let lastTime = -1;
-    cvScale.cv.bind('contextmenu', () => false)
-        .on('mousedown mousemove touchstart touchmove', e => {
+    cvScale.cv.bind('contextmenu', () => false).on('mousedown mousemove touchstart touchmove', e => {
         e.preventDefault();
         const {clientX, clientY, buttons, which, type, originalEvent} = e;
         let _x = clientX,
