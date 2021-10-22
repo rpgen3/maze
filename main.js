@@ -15,6 +15,10 @@
         'util',
         'random'
     ].map(v => `https://rpgen3.github.io/mylib/export/${v}.mjs`));
+    const {LayeredCanvas, lerp} = await importAll([
+        'LayeredCanvas',
+        'lerp'
+    ].map(v => `https://rpgen3.github.io/maze/mjs/sys/${v}.mjs`));
     $('<div>').appendTo(head).text('経路探索');
     const addBtn = (h, ttl, func) => $('<button>').appendTo(h).text(ttl).on('click', func);
     const msg = (() => {
@@ -42,13 +46,6 @@
               y = i / g_w | 0;
         return [x, y];
     };
-    const clearMaze = () => {
-        for(const i of g_maze.keys()) g_maze[i] = false;
-    };
-    const calcCvWH = () => ({
-        width: g_w * g_unit + 1,
-        height: g_h * g_unit + 1
-    });
     addBtn(head, '初期化', () => {
         g_status++;
         [g_w, g_h] = [inputW(), inputH()];
@@ -58,8 +55,7 @@
         const divide = 0.9 / inputW;
         if(w > 500) g_unit = Math.max(500, w * 0.5) * divide | 0;
         if(g_unit < 5) g_unit = w * divide | 0;
-        hCv.find('canvas').prop(calcCvWH());
-        drawScale(g_w, g_h);
+        LayeredCanvas.update(g_unit, g_w, g_h).drawScale(cvScale);
         body.add(foot).show();
     });
     const inputType = rpgen3.addSelect(foot, {
@@ -121,12 +117,10 @@
         cvStart.clear().draw(...xyStart);
         cvGoal.clear().draw(...xyGoal);
     });
-    const hCv = $('<div>').appendTo(foot).css({
-        position: 'relative',
-        display: 'inline-block'
-    });
+    LayeredCanvas.init($('<div>').appendTo(foot));
     addBtn($('<div>').appendTo(foot), '画像として保存', () => {
-        const cv = $('<canvas>').prop(calcCvWH()),
+        const {width, height} = cvScale.cv.canvas,
+              cv = $('<canvas>').prop({width, height}),
               ctx = cv.get(0).getContext('2d');
         for(const {cv} of [
             cvMaze,
@@ -141,127 +135,50 @@
             download: 'maze.png'
         }).get(0).click();
     });
-    class Canvas {
-        constructor(color){
-            this.color = color;
-            this.cv = $('<canvas>').appendTo(hCv);
-            if(hCv.find('canvas').length > 1) this.cv.css({
-                position: 'absolute',
-                left: 0,
-                top: 0
-            });
-            this.ctx = this.cv.get(0).getContext('2d');
-        }
-        draw(x, y, isErase){
-            this.ctx.fillStyle = this.color;
-            this.ctx[isErase ? 'clearRect' : 'fillRect'](...[x, y, 1, 1].map(v => v * g_unit));
-            return this;
-        }
-        clear(){
-            const {width, height} = this.ctx.canvas;
-            this.ctx.clearRect(0, 0, width, height);
-            return this;
-        }
-    }
-    const cvMaze = new Canvas('rgba(127, 127, 127, 1)'),
-          cvUsed = new Canvas('rgba(0, 127, 127, 0.4)'),
-          cvRoad = new Canvas('rgba(255, 0, 0, 0.4)'),
-          cvStart = new Canvas('rgba(255, 127, 0, 0.8)'),
-          cvGoal = new Canvas('rgba(127, 0, 255, 0.8)'),
-          cvScale = new Canvas('rgba(0, 0, 0, 1)');
+    const cvMaze = new LayeredCanvas('rgba(127, 127, 127, 1)'),
+          cvUsed = new LayeredCanvas('rgba(0, 127, 127, 0.4)'),
+          cvRoad = new LayeredCanvas('rgba(255, 0, 0, 0.4)'),
+          cvStart = new LayeredCanvas('rgba(255, 127, 0, 0.8)'),
+          cvGoal = new LayeredCanvas('rgba(127, 0, 255, 0.8)'),
+          cvScale = new LayeredCanvas('rgba(0, 0, 0, 1)');
     const xyStart = [-1, -1],
           xyGoal = [-1, -1];
-    const drawScale = (w, h) => {
-        const max = Math.max(w, h),
-              [_w, _h] = [w, h].map(v => v * g_unit),
-              {ctx, color} = cvScale;
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 1;
-        ctx.translate(0.5, 0.5);
-        ctx.beginPath();
-        for(let i = -1; i <= max; i++) {
-            const _ = i * g_unit;
-            if(i <= w) ctx.moveTo(_, 0), ctx.lineTo(_, _h);
-            if(i <= h) ctx.moveTo(0, _), ctx.lineTo(_w, _);
-        }
-        ctx.stroke();
-    };
-    const lerp = (x, y, _x, _y) => {
-        const a = _x - x,
-              b = _y - y,
-              len = Math.max(...[a, b].map(Math.abs)),
-              _a = a / len,
-              _b = b / len;
-        return [...new Array(len).keys()].map(i => [
-            i * _a + x,
-            i * _b + y
-        ].map(Math.round));
-    };
-    const xyLast = [-1, -1],
-          deltaTime = 100;
-    let lastTime = -1;
-    cvScale.cv.bind('contextmenu', () => false).on('mousedown mousemove touchstart touchmove', e => {
-        e.preventDefault();
-        const {clientX, clientY, buttons, which, type, originalEvent} = e;
-        let _x = clientX,
-            _y = clientY;
-        if(type.includes('touch')){
-            const {clientX, clientY} = originalEvent.touches[0];
-            _x = clientX;
-            _y = clientY;
-        }
-        else if(!which) return;
-        const {left, top} = originalEvent.target.getBoundingClientRect(),
-              [x, y] = [
-                  _x - left,
-                  _y - top
-              ].map(v => v / g_unit | 0),
-              erase = buttons === 2 || eraseFlag();
-        if(log.unchanged(x, y, erase)) return;
-        switch(inputType()){
-            case 0: {
-                const now = performance.now();
-                for(const [_x, _y] of now - lastTime > deltaTime ? [[x, y]] : lerp(x, y, ...xyLast)) {
-                    cvMaze.draw(_x, _y, erase);
-                    g_maze[toI(_x, _y)] = !erase;
+    {
+        const xyLast = [-1, -1],
+              deltaTime = 100;
+        let lastTime = -1;
+        LayeredCanvas.onDraw(cvScale, (x, y, erase) => {
+            switch(inputType()){
+                case 0: {
+                    const now = performance.now();
+                    for(const [_x, _y] of now - lastTime > deltaTime ? [[x, y]] : lerp(x, y, ...xyLast)) {
+                        cvMaze.draw(_x, _y, erase);
+                        g_maze[toI(_x, _y)] = !erase;
+                    }
+                    xyLast[0] = x;
+                    xyLast[1] = y;
+                    lastTime = now;
+                    break;
                 }
-                xyLast[0] = x;
-                xyLast[1] = y;
-                lastTime = now;
-                break;
+                case 1:
+                    cvStart.clear().draw(x, y, erase);
+                    if(erase) xyStart[0] = xyStart[1] = -1;
+                    else {
+                        xyStart[0] = x;
+                        xyStart[1] = y;
+                    }
+                    break;
+                case 2:
+                    cvGoal.clear().draw(x, y, erase);
+                    if(erase) xyGoal[0] = xyGoal[1] = -1;
+                    else {
+                        xyGoal[0] = x;
+                        xyGoal[1] = y;
+                    }
+                    break;
             }
-            case 1:
-                cvStart.clear().draw(x, y, erase);
-                if(erase) xyStart[0] = xyStart[1] = -1;
-                else {
-                    xyStart[0] = x;
-                    xyStart[1] = y;
-                }
-                break;
-            case 2:
-                cvGoal.clear().draw(x, y, erase);
-                if(erase) xyGoal[0] = xyGoal[1] = -1;
-                else {
-                    xyGoal[0] = x;
-                    xyGoal[1] = y;
-                }
-                break;
-        }
-    });
-    const log = new class {
-        constructor(num){
-            this.arr = [...Array(num)];
-        }
-        unchanged(...arg){
-            let flag = true;
-            for(const [i, v] of this.arr.entries()) {
-                if(v === arg[i]) continue;
-                this.arr[i] = v;
-                if(flag) flag = false;
-            }
-            return flag;
-        }
-    }(3);
+        }, () => eraseFlag());
+    }
     const inputDelay = rpgen3.addInputNum(body, {
         label: '表示の遅延時間[ms]',
         save: true,
@@ -281,7 +198,7 @@
         cvUsed.clear();
         cvRoad.clear();
         cvMaze.clear();
-        clearMaze();
+        for(const i of g_maze.keys()) g_maze[i] = false;
         await func({
             width: g_w,
             height: g_h,
