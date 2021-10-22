@@ -30,3 +30,38 @@ export class Canvas {
         return this;
     }
 }
+export const drawScale = cv => {
+    const {width, height} = this.ctx.canvas,
+          max = Math.max(width, height),
+          [w, h] = [width, height].map(v => v * unit),
+          {ctx, color} = cv;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.translate(0.5, 0.5);
+    ctx.beginPath();
+    for(let i = -1; i <= max; i++) {
+        const _ = i * unit;
+        if(i <= w) ctx.moveTo(_, 0), ctx.lineTo(_, h);
+        if(i <= h) ctx.moveTo(0, _), ctx.lineTo(w, _);
+    }
+    ctx.stroke();
+};
+export const drawable = cv => cv.cv.bind('contextmenu', () => false).on('mousedown mousemove touchstart touchmove', e => {
+    e.preventDefault();
+    const {clientX, clientY, buttons, which, type, originalEvent} = e;
+    let _x = clientX,
+        _y = clientY;
+    if(type.includes('touch')){
+        const {clientX, clientY} = originalEvent.touches[0];
+        _x = clientX;
+        _y = clientY;
+    }
+    else if(!which) return;
+    const {left, top} = originalEvent.target.getBoundingClientRect(),
+          [x, y] = [
+              _x - left,
+              _y - top
+          ].map(v => v / unit | 0),
+          erase = buttons === 2 || isErase();
+    if(log.unchanged(x, y, erase)) return;
+});
