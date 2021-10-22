@@ -38,8 +38,7 @@
     }));
     let g_maze = [],
         g_w = -1,
-        g_h = -1,
-        g_unit = -1;
+        g_h = -1;
     const toI = (x, y) => x + y * g_w;
     const toXY = i => {
         const x = i % g_w,
@@ -51,11 +50,11 @@
         [g_w, g_h] = [inputW(), inputH()];
         g_maze = [...Array(g_w * g_h).fill(false)];
         const w = $(window).width();
-        g_unit = -1;
+        let unit = -1;
         const divide = 0.9 / inputW;
-        if(w > 500) g_unit = Math.max(500, w * 0.5) * divide | 0;
-        if(g_unit < 5) g_unit = w * divide | 0;
-        LayeredCanvas.update(g_unit, g_w, g_h);
+        if(w > 500) unit = Math.max(500, w * 0.5) * divide | 0;
+        if(unit < 5) unit = w * divide | 0;
+        LayeredCanvas.update(unit, g_w, g_h);
         cvScale.drawScale();
         body.add(foot).show();
     });
