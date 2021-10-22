@@ -6,7 +6,11 @@ let g_elm = null,
 export class LayeredCanvas {
     constructor(color){
         this.color = color;
-        this.cv = $('<canvas>').appendTo(g_elm);
+        this.cv = $('<canvas>').appendTo(g_elm).css({
+            position: 'absolute',
+            left: 0,
+            top: 0
+        });
         this.ctx = this.cv.get(0).getContext('2d');
     }
     draw(x, y, isErase){
@@ -26,15 +30,10 @@ export class LayeredCanvas {
         drawScale(this);
     }
     static init(elm){
-        $('<canvas>').appendTo(elm).css({
-            position: 'absolute',
-            left: 0,
-            top: 0
-        });
         g_elm = elm.css({
             position: 'relative',
             display: 'inline-block'
-        });
+        }).empty().append($('<canvas>'));
         return this;
     }
     static update(unit, w, h){
