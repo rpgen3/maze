@@ -30,6 +30,7 @@ export class LayeredCanvas {
             display: 'inline-block'
         });
         g_elm = elm;
+        return this;
     }
     static update(unit, w, h){
         g_elm.find('canvas').prop({
@@ -39,6 +40,7 @@ export class LayeredCanvas {
         g_unit = unit;
         g_w = w;
         g_h = h;
+        return this;
     }
     static get onDraw(){
         return onDraw;
