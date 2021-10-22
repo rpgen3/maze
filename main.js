@@ -45,6 +45,10 @@
     const clearMaze = () => {
         for(const i of g_maze.keys()) g_maze[i] = false;
     };
+    const calcCvWH = () => ({
+        width: g_w * g_unit + 1,
+        height: g_h * g_unit + 1
+    });
     addBtn(head, '初期化', () => {
         g_status++;
         [g_w, g_h] = [inputW(), inputH()];
@@ -54,10 +58,7 @@
         const divide = 0.9 / inputW;
         if(w > 500) g_unit = Math.max(500, w * 0.5) * divide | 0;
         if(g_unit < 5) g_unit = w * divide | 0;
-        hCv.find('canvas').prop({
-            width: g_w * g_unit,
-            height: g_h * g_unit
-        });
+        hCv.find('canvas').prop(calcCvWH());
         drawScale(g_w, g_h);
         body.add(foot).show();
     });
@@ -125,10 +126,7 @@
         display: 'inline-block'
     });
     addBtn($('<div>').appendTo(foot), '画像として保存', () => {
-        const cv = $('<canvas>').prop({
-            width: g_w * g_unit,
-            height: g_h * g_unit
-        }),
+        const cv = $('<canvas>').prop(calcCvWH()),
               ctx = cv.get(0).getContext('2d');
         for(const {cv} of [
             cvMaze,
@@ -170,7 +168,7 @@
           cvRoad = new Canvas('rgba(255, 0, 0, 0.4)'),
           cvStart = new Canvas('rgba(255, 127, 0, 0.8)'),
           cvGoal = new Canvas('rgba(127, 0, 255, 0.8)'),
-          cvScale = new Canvas('rgba(0, 0, 0, 0.5)');
+          cvScale = new Canvas('rgba(0, 0, 0, 1)');
     const xyStart = [-1, -1],
           xyGoal = [-1, -1];
     const drawScale = (w, h) => {
@@ -179,6 +177,7 @@
               {ctx, color} = cvScale;
         ctx.strokeStyle = color;
         ctx.lineWidth = 1;
+        ctx.translate(0.5, 0.5);
         ctx.beginPath();
         for(let i = -1; i <= max; i++) {
             const _ = i * g_unit;
