@@ -46,7 +46,9 @@ export const drawScale = cv => {
     }
     ctx.stroke();
 };
-export const drawable = cv => cv.cv.bind('contextmenu', () => false).on('mousedown mousemove touchstart touchmove', e => {
+export const onDraw = (cv, callback, isErase = () => false) => cv.cv
+.bind('contextmenu', () => false)
+.on('mousedown mousemove touchstart touchmove', e => {
     e.preventDefault();
     const {clientX, clientY, buttons, which, type, originalEvent} = e;
     let _x = clientX,
@@ -63,5 +65,6 @@ export const drawable = cv => cv.cv.bind('contextmenu', () => false).on('mousedo
               _y - top
           ].map(v => v / unit | 0),
           erase = buttons === 2 || isErase();
-    if(log.unchanged(x, y, erase)) return;
+    if(obs.changed(x, y, erase)) callback(x, y, buttons === 2);
 });
+const obs = new Observe(3);
