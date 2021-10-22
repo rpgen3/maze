@@ -34,8 +34,8 @@ export class LayeredCanvas {
     }
     static update(unit, w, h){
         g_elm.find('canvas').prop({
-            width: w * g_unit + 1,
-            height: h * g_unit + 1
+            width: w * unit + 1,
+            height: h * unit + 1
         });
         g_unit = unit;
         g_w = w;
