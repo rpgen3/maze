@@ -119,7 +119,7 @@
     });
     LayeredCanvas.init($('<div>').appendTo(foot));
     addBtn($('<div>').appendTo(foot), '画像として保存', () => {
-        const {width, height} = cvScale.cv.get(0).canvas,
+        const {width, height} = cvScale.ctx.canvas,
               cv = $('<canvas>').prop({width, height}),
               ctx = cv.get(0).getContext('2d');
         for(const {cv} of [
