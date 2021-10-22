@@ -66,6 +66,6 @@ export const onDraw = (cv, callback, isErase = () => false) => cv.cv
               _y - top
           ].map(v => v / unit | 0),
           erase = buttons === 2 || isErase();
-    if(obs.changed(x, y, erase)) callback(x, y, buttons === 2);
+    if(obs.changed(x, y, erase)) callback(x, y, erase);
 });
 const obs = new Observe(3);
