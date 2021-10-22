@@ -55,7 +55,8 @@
         const divide = 0.9 / inputW;
         if(w > 500) g_unit = Math.max(500, w * 0.5) * divide | 0;
         if(g_unit < 5) g_unit = w * divide | 0;
-        LayeredCanvas.update(g_unit, g_w, g_h).drawScale(cvScale);
+        LayeredCanvas.update(g_unit, g_w, g_h);
+        cvScale.drawScale();
         body.add(foot).show();
     });
     const inputType = rpgen3.addSelect(foot, {
@@ -147,7 +148,7 @@
         const xyLast = [-1, -1],
               deltaTime = 100;
         let lastTime = -1;
-        LayeredCanvas.onDraw(cvScale, (x, y, erase) => {
+        cvScale.onDraw((x, y, erase) => {
             switch(inputType()){
                 case 0: {
                     const now = performance.now();
