@@ -1,3 +1,4 @@
+import {Observe} from 'https://rpgen3.github.io/maze/mjs/sys/Observe.mjs';
 let holder = null,
     unit = 1;
 export class Canvas {
