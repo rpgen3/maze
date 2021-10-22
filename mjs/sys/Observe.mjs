@@ -7,7 +7,7 @@ export class Observe {
         for(const [i, v] of this.arr.entries()) {
             if(v === arg[i]) continue;
             this.arr[i] = v;
-            if(flag) flag = true;
+            if(!flag) flag = true;
         }
         return flag;
     }
