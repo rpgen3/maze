@@ -191,8 +191,8 @@
         if(d) return sleep(d);
     };
     let g_status = -1;
-    const makeMaze = async func => {
-        msg(`start ${func.name}`);
+    const makeMaze = async (name, func) => {
+        msg(`start ${name}`);
         const status = ++g_status;
         cvUsed.clear();
         cvRoad.clear();
@@ -215,20 +215,21 @@
                 await wait();
             }
         });
-        msg(`finish ${func.name}`);
+        msg(`finish ${name}`);
     };
     $('<div>').appendTo(body).text('迷路生成');
-    addBtn(body, '棒倒し法', () => {
-        makeMaze(rpgen4.fellDown);
+    const add = (name, func) => addBtn(body, name, () => func(name));
+    add('棒倒し法', name => {
+        makeMaze(name, rpgen4.fellDown);
     });
-    addBtn(body, '壁延ばし法', () => {
-        makeMaze(rpgen4.extendWall);
+    add('壁延ばし法', name => {
+        makeMaze(name, rpgen4.extendWall);
     });
-    addBtn(body, '穴掘り法', () => {
-        makeMaze(rpgen4.dig);
+    add('穴掘り法', name => {
+        makeMaze(name, rpgen4.dig);
     });
-    const search = async (func, weight = [1, 1], giveup = false) => {
-        msg(`start ${func.name}`);
+    const search = async (name, func, weight = [1, 1], giveup = false) => {
+        msg(`start ${name}`);
         const status = ++g_status;
         cvUsed.clear();
         cvRoad.clear();
@@ -253,32 +254,32 @@
             cvRoad.draw(...toXY(i));
             await wait();
         }
-        msg(`finish ${func.name} 走査数:${count} 距離:${result.length}`);
+        msg(`finish ${name} 走査数:${count} 距離:${result.length}`);
     };
     $('<div>').appendTo(body).text('経路探索');
-    addBtn(body, '深さ優先探索(DFS)', () => {
-        search(rpgen5.dfs);
+    add('深さ優先探索(DFS)', name => {
+        search(name, rpgen5.dfs);
     });
-    addBtn(body, '幅優先探索(BFS)', () => {
-        search(rpgen5.bfs);
+    add('幅優先探索(BFS)', name => {
+        search(name, rpgen5.bfs);
     });
-    addBtn(body, '最良優先探索', () => {
-        search(rpgen5.aStar, [0, 1]);
+    add('最良優先探索', name => {
+        search(name, rpgen5.aStar, [0, 1]);
     });
-    addBtn(body, 'A*探索', () => {
-        search(rpgen5.aStar);
+    add('A*探索', name => {
+        search(name, rpgen5.aStar);
     });
-    addBtn(body, '最良優先探索 + A*探索', async () => {
+    add('最良優先探索 + A*探索', async name => {
         let status = g_status + 1;
         try {
-            await search(rpgen5.aStar, [0, 1], true);
+            await search(name, rpgen5.aStar, [0, 1], true);
         }
         catch {
-            if(status === g_status) await search(rpgen5.aStar);
+            if(status === g_status) await search(name, rpgen5.aStar);
         }
     });
-    addBtn(body, 'A探索', () => {
-        search(rpgen5.aStar, aInputs.map(v => v()), isGiveup());
+    add('A探索', name => {
+        search(name, rpgen5.aStar, aInputs.map(v => v()), isGiveup());
     });
     const aConfig = rpgen3.addInputBool(body, {
         label: 'A探索の設定'
