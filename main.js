@@ -234,6 +234,7 @@
         const status = ++g_status;
         cvUsed.clear();
         cvRoad.clear();
+        let count = 0;
         const result = await func({
             maze: g_maze.slice(),
             start: xyStart.slice(),
@@ -244,6 +245,7 @@
                 if(g_status !== status) throw 'break';
                 cvUsed.draw(...toXY(i));
                 await wait();
+                count++;
             },
             heuristic: selectHeuristic(),
             weight, giveup
@@ -253,7 +255,7 @@
             cvRoad.draw(...toXY(i));
             await wait();
         }
-        msg(`finish ${performance.now() - _ | 0}ms`);
+        msg(`finish ${performance.now() - _ | 0}ms 探索数:${count} 距離:${result.length}`);
     };
     $('<div>').appendTo(body).text('経路探索');
     addBtn(body, '深さ優先探索(DFS)', () => {
