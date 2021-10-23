@@ -192,8 +192,7 @@
     };
     let g_status = -1;
     const makeMaze = async func => {
-        const _ = performance.now();
-        msg(`start ${rpgen3.getTime()}`);
+        msg(`start ${func.name}`);
         const status = ++g_status;
         cvUsed.clear();
         cvRoad.clear();
@@ -216,7 +215,7 @@
                 await wait();
             }
         });
-        msg(`finish ${performance.now() - _ | 0}ms`);
+        msg(`finish ${func.name}`);
     };
     $('<div>').appendTo(body).text('迷路生成');
     addBtn(body, '棒倒し法', () => {
@@ -229,8 +228,7 @@
         makeMaze(rpgen4.dig);
     });
     const search = async (func, weight = [1, 1], giveup = false) => {
-        const _ = performance.now();
-        msg(`start ${rpgen3.getTime()}`);
+        msg(`start ${func.name}`);
         const status = ++g_status;
         cvUsed.clear();
         cvRoad.clear();
@@ -255,7 +253,7 @@
             cvRoad.draw(...toXY(i));
             await wait();
         }
-        msg(`finish ${performance.now() - _ | 0}ms 走査数:${count} 距離:${result.length}`);
+        msg(`finish ${func.name} 走査数:${count} 距離:${result.length}`);
     };
     $('<div>').appendTo(body).text('経路探索');
     addBtn(body, '深さ優先探索(DFS)', () => {
