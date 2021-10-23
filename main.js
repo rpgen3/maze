@@ -254,7 +254,7 @@
             cvRoad.draw(...toXY(i));
             await wait();
         }
-        msg(`finish ${name} 走査数:${count} 最短距離:${result.length}`);
+        msg(`finish ${name} 走査数:${count}/${g_maze.length} 最短距離:${result.length}`);
     };
     $('<div>').appendTo(body).text('経路探索');
     add('深さ優先探索(DFS)', name => {
