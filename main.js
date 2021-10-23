@@ -255,7 +255,7 @@
             cvRoad.draw(...toXY(i));
             await wait();
         }
-        msg(`finish ${performance.now() - _ | 0}ms 探索数:${count} 距離:${result.length}`);
+        msg(`finish ${performance.now() - _ | 0}ms 走査数:${count} 距離:${result.length}`);
     };
     $('<div>').appendTo(body).text('経路探索');
     addBtn(body, '深さ優先探索(DFS)', () => {
