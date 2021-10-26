@@ -22,7 +22,7 @@ export class Heap {
     push(key, value){
         const {list, length} = this;
         list.push(new Node(key, value));
-        let i = length - 1;
+        let i = length;
         while(i){
             const p = toParent(i);
             if(this.#compare(i, p)) this.#swap(i, p);
