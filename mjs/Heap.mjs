@@ -33,7 +33,8 @@ export class Heap {
         else if(n === -1) throw 'queue is empty.';
         const result = list[0];
         list[0] = list.pop();
-        let i = 0, j = toChild(i);
+        let i = 0,
+            j = toChild(i);
         while(j < n){
             if (j < n - 1 && this.#compare(j + 1, j)) j++; // 値の大きい方の子を選ぶ O(n)
             if (this.#compare(j, i)) this.#swap(j, i);
