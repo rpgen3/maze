@@ -41,10 +41,10 @@ export const extendWall = async ({width, height, update, updateAll}) => {
         }
         else return main();
     };
-    const now = []; // 現在拡張中の壁
+    const now = new Set; // 現在拡張中の壁
     const extend = async (x, y) => { // 壁延ばし本処理
         const _i = toI(x, y);
-        now.push(_i);
+        now.add(_i);
         await put(_i);
         const way = [];
         if(x !== 0) way.push([-2, 0]);
@@ -53,14 +53,14 @@ export const extendWall = async ({width, height, update, updateAll}) => {
         if(y !== height - 1) way.push([0, 2]);
         const nexts = way.flatMap(([_x, _y]) => {
             const _i = toI(_x + x, _y + y);
-            return now.includes(_i) ? [] : [_i];
+            return now.has(_i) ? [] : [_i];
         });
         if(!nexts.length) return extend(...toXY(stack.pop())); // 四方がすべて現在拡張中の壁の場合
         else {
             const next = toXY(randArr(nexts));
             await put(toI(...[x, y].map((v, i) => v + (next[i] - v >> 1)))); // 奇数マス
             if(maze[toI(...next)]) { // 壁の場合
-                while(now.length) now.pop();
+                now.clear();
                 return main();
             }
             stack.push(_i); // 通路の場合
