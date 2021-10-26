@@ -24,12 +24,15 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
           calcH = i => heuristic(...goal, ...toXY(i)) * wH,
           nodeMap = new Map,
           heap = new Heap();
-    nodeMap.set(_start, new Node(_start, null, 0, calcH(_start)));
-    heap.push(0, _start);
+    {
+        const tmp = new Node(_start, null, 0, calcH(_start));
+        nodeMap.set(_start, tmp);
+        heap.push(tmp.cost, tmp);
+    }
     let found = false,
         min = Infinity;
     while(heap.list.length) {
-        const node = nodeMap.get(heap.pop()),
+        const node = heap.pop(),
               {index, gCost, cost} = node;
         if(giveup) {
             if(min < cost) throw 'Not found.';
@@ -46,7 +49,7 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
         for(const i of abled) {
             const tmp = new Node(i, node, g * wG, calcH(i));
             nodeMap.set(i, tmp);
-            heap.push(tmp.cost, i);
+            heap.push(tmp.cost, tmp);
         }
     }
     if(found) return Node.toArr(nodeMap.get(_goal));
