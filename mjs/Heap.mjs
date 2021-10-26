@@ -8,8 +8,8 @@ export class Heap {
     }
     #compare(a, b){
         const {list} = this,
-              c = list[a].key,
-              d = list[b].key;
+              c = list[a].priority,
+              d = list[b].priority;
         return this.#isMaxHeap ? c > d : c < d;
     }
     #swap(a, b){
@@ -19,9 +19,9 @@ export class Heap {
     get length(){
         return this.list.length;
     }
-    push(key, value){
+    push(priority, value){
         const {list, length} = this;
-        list.push(new Node(key, value));
+        list.push(new Node(priority, value));
         let i = length;
         while(i){
             const p = toParent(i);
@@ -48,8 +48,8 @@ export class Heap {
     }
 }
 class Node {
-    constructor(key, value) {
-        this.key = key;
+    constructor(priority, value) {
+        this.priority = priority;
         this.value = value;
     }
 }
