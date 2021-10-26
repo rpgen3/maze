@@ -1,7 +1,7 @@
 const toParent = n => n - 1 >> 1,
       toChild = n => (n << 1) + 1;
 export class Heap {
-    #isMaxHeap;
+    #isMaxHeap = false;
     constructor(isMaxHeap){
         this.#isMaxHeap = Boolean(isMaxHeap);
         this.list = [];
