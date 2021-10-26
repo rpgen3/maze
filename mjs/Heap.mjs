@@ -1,5 +1,5 @@
 const toParent = n => n - 1 >> 1,
-      toChild = n => (n << 1) + 1;
+      toRoot = n => (n << 1) + 1;
 export class Heap {
     #isMaxHeap = false;
     constructor(isMaxHeap){
@@ -38,11 +38,11 @@ export class Heap {
         list[0] = list.pop();
         let i = 0;
         while(true){
-            let c = toChild(i);
-            if(c >= n) break;
-            else if (c < n - 1 && this.#compare(c + 1, c)) c++;
-            if (this.#compare(c, i)) this.#swap(c, i);
-            i = c;
+            let r = toRoot(i);
+            if(r >= n) break;
+            else if(r < n - 1 && this.#compare(r + 1, r)) r++;
+            if(this.#compare(r, i)) this.#swap(r, i);
+            i = r;
         }
         return result.value;
     }
