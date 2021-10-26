@@ -1,5 +1,5 @@
-const toP = n => n - 1 >> 1,
-      toL = n => (n << 1) + 1;
+const toParent = n => n - 1 >> 1,
+      toChild = n => (n << 1) + 1;
 const swap = (arr, a, b) => {
     const tmp = arr[a];
     arr[a] = arr[b];
@@ -15,7 +15,7 @@ export class Heap {
         list.push(new Node(key, value));
         let n = list.length - 1;
         while(n){
-            const i = toP(n);
+            const i = toParent(n);
             if(compare(list[n], list[i])) swap(list, n, i);
             n = i;
         }
@@ -27,12 +27,12 @@ export class Heap {
         else if(n === -1) throw 'queue is empty.';
         const result = list[0];
         list[0] = list.pop();
-        let i = 0, j = toL(i);
+        let i = 0, j = toChild(i);
         while(j < n){
             if (j < n - 1 && compare(list[j + 1], list[j])) j++; // 値の大きい方の子を選ぶ O(n)
             if (compare(list[j], list[i])) swap(list, j, i);
             i = j;
-            j = toL(i);
+            j = toChild(i);
         }
         return result.value;
     }
