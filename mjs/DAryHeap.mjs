@@ -11,7 +11,7 @@ export class DAryHeap {
     #toParent(n){
         return n - 1 >> this.#n;
     }
-    #toChild(n){
+    #toRoot(n){
         return (n << this.#n) + 1;
     }
     #compare(a, b){
@@ -46,13 +46,13 @@ export class DAryHeap {
         list[0] = list.pop();
         let i = 0;
         while(true){
-            let c = this.#toChild(i);
-            if(c >= n) break;
+            let r = this.#toRoot(i);
+            if(r >= n) break;
             let _i = 0;
-            for(let i = 1, max = Math.min(this.#d, n - c); i < max; i++) if(this.#compare(c + i, c + _i)) _i = i;
-            c += _i;
-            if(this.#compare(c, i)) this.#swap(c, i);
-            i = c;
+            for(let i = 1, max = Math.min(this.#d, n - r); i < max; i++) if(this.#compare(r + i, r + _i)) _i = i;
+            r += _i;
+            if(this.#compare(r, i)) this.#swap(r, i);
+            i = r;
         }
         return result.value;
     }
