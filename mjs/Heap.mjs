@@ -7,8 +7,10 @@ export class Heap {
         this.list = [];
     }
     #compare(a, b){
-        const {list} = this;
-        return this.#isMaxHeap ? list[a].key > list[b].key : list[a].key < list[b].key;
+        const {list} = this,
+              c = list[a].key,
+              d = list[b].key;
+        return this.#isMaxHeap ? c > d : c < d;
     }
     #swap(a, b){
         const {list} = this;
