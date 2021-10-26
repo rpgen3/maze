@@ -31,7 +31,7 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
     }
     let found = false,
         min = Infinity;
-    while(heap.list.length) {
+    while(heap.length) {
         const node = heap.pop(),
               {index, gCost, cost} = node;
         if(giveup) {
