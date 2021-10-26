@@ -36,7 +36,7 @@ export class Heap {
         let i = 0;
         while(true){
             let c = toChild(i);
-            if(c > n) break;
+            if(c >= n) break;
             else if (c < n - 1 && this.#compare(c + 1, c)) c++;
             if (this.#compare(c, i)) this.#swap(c, i);
             i = c;
