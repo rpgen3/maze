@@ -1,14 +1,13 @@
 const toParent = n => n - 1 >> 1,
       toChild = n => (n << 1) + 1;
-const swap = (arr, a, b) => {
-    const tmp = arr[a];
-    arr[a] = arr[b];
-    arr[b] = tmp;
-};
 export class Heap {
     constructor(isMaxHeap){
         this.compare = isMaxHeap ? (a, b) => a.key > b.key : (a, b) => a.key < b.key;
         this.list = [];
+    }
+    #swap(a, b){
+        const {list} = this;
+        [list[a], list[b]] = [list[b], list[a]];
     }
     push(key, value){
         const {compare, list} = this;
@@ -16,7 +15,7 @@ export class Heap {
         let n = list.length - 1;
         while(n){
             const i = toParent(n);
-            if(compare(list[n], list[i])) swap(list, n, i);
+            if(compare(list[n], list[i])) this.#swap(n, i);
             n = i;
         }
     }
@@ -30,7 +29,7 @@ export class Heap {
         let i = 0, j = toChild(i);
         while(j < n){
             if (j < n - 1 && compare(list[j + 1], list[j])) j++; // 値の大きい方の子を選ぶ O(n)
-            if (compare(list[j], list[i])) swap(list, j, i);
+            if (compare(list[j], list[i])) this.#swap(j, i);
             i = j;
             j = toChild(i);
         }
