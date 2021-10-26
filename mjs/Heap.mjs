@@ -35,7 +35,7 @@ export class Heap {
         list[0] = list.pop();
         let i = 0;
         while(true){
-            const c = toChild(i);
+            let c = toChild(i);
             if(c > n) break;
             else if (c < n - 1 && this.#compare(c + 1, c)) c++;
             if (this.#compare(c, i)) this.#swap(c, i);
