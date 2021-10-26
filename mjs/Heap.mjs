@@ -19,11 +19,11 @@ export class Heap {
     push(key, value){
         const {list} = this;
         list.push(new Node(key, value));
-        let n = list.length - 1;
-        while(n){
-            const i = toParent(n);
-            if(this.#compare(n, i)) this.#swap(n, i);
-            n = i;
+        let i = list.length - 1;
+        while(i){
+            const p = toParent(i);
+            if(this.#compare(i, p)) this.#swap(i, p);
+            i = p;
         }
     }
     pop(){
@@ -33,13 +33,13 @@ export class Heap {
         else if(n === -1) throw 'queue is empty.';
         const result = list[0];
         list[0] = list.pop();
-        let i = 0,
-            j = toChild(i);
-        while(j < n){
-            if (j < n - 1 && this.#compare(j + 1, j)) j++; // 値の大きい方の子を選ぶ O(n)
-            if (this.#compare(j, i)) this.#swap(j, i);
-            i = j;
-            j = toChild(i);
+        let i = 0;
+        while(true){
+            const c = toChild(i);
+            if(c > n) break;
+            else if (c < n - 1 && this.#compare(c + 1, c)) c++;
+            if (this.#compare(c, i)) this.#swap(c, i);
+            i = c;
         }
         return result.value;
     }
