@@ -27,8 +27,8 @@ export class Heap {
         }
     }
     pop(){
-        const {list} = this;
-        let n = list.length - 1;
+        const {list} = this,
+              n = list.length - 1;
         if(n === 0) return list.pop().value;
         else if(n === -1) throw 'queue is empty.';
         const result = list[0];
