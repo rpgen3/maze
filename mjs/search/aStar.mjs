@@ -18,15 +18,15 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
             return maze[_i] || nodeMap.has(_i) ? [] : [_i];
         });
     };
-    const _start = toI(...start),
-          _goal = toI(...goal),
+    const _goal = toI(...goal),
           [wG, wH] = weight,
           calcH = i => heuristic(...goal, ...toXY(i)) * wH,
           nodeMap = new Map,
           heap = new Heap();
     {
-        const tmp = new Node(_start, null, 0, calcH(_start));
-        nodeMap.set(_start, tmp);
+        const i = toI(...start),
+              tmp = new Node(i, null, 0, calcH(i));
+        nodeMap.set(i, tmp);
         heap.push(tmp.cost, tmp);
     }
     let found = false,
