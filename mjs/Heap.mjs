@@ -16,10 +16,13 @@ export class Heap {
         const {list} = this;
         [list[a], list[b]] = [list[b], list[a]];
     }
+    get length(){
+        return this.list.length;
+    }
     push(key, value){
-        const {list} = this;
+        const {list, length} = this;
         list.push(new Node(key, value));
-        let i = list.length - 1;
+        let i = length - 1;
         while(i){
             const p = toParent(i);
             if(this.#compare(i, p)) this.#swap(i, p);
@@ -27,8 +30,8 @@ export class Heap {
         }
     }
     pop(){
-        const {list} = this,
-              n = list.length - 1;
+        const {list, length} = this,
+              n = length - 1;
         if(n === 0) return list.pop().value;
         else if(n === -1) throw 'queue is empty.';
         const result = list[0];
