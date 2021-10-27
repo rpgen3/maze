@@ -1,4 +1,4 @@
-import {Heap} from 'https://rpgen3.github.io/maze/mjs/Heap.mjs';
+import {Heap} from 'https://rpgen3.github.io/maze/mjs/heap/Heap.mjs';
 export const aStar = async ({maze, start, goal, width, height, update, heuristic, weight = [1, 1], giveup = false}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
