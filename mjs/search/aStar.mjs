@@ -6,7 +6,7 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
               y = i / width | 0;
         return [x, y];
     };
-    const getAbled = i => {
+    const getAbled = (i, parent) => {
         const [x, y] = toXY(i);
         const way = [];
         if(x !== 0) way.push([-1, 0]);
@@ -15,7 +15,7 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
         if(y !== height - 1) way.push([0, 1]);
         return way.flatMap(([_x, _y]) => {
             const _i = toI(_x + x, _y + y);
-            return maze[_i] || nodeMap.has(_i) ? [] : [_i];
+            return maze[_i] || nodeMap.has(_i) || _i === parent ? [] : [_i];
         });
     };
     const _goal = toI(...goal),
@@ -43,7 +43,7 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
             found = true;
             break;
         }
-        const abled = getAbled(index);
+        const abled = getAbled(index, node.parent?.index);
         if(!abled.length) continue;
         const g = gCost + 1;
         for(const i of abled) {
