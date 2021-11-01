@@ -120,7 +120,11 @@
     LayeredCanvas.init($('<div>').appendTo(foot));
     addBtn($('<div>').appendTo(foot), '画像として保存', () => {
         const {width, height} = cvScale.ctx.canvas,
-              cv = $('<canvas>').prop({width, height}),
+              sub = hideScale() ? 1 : 0,
+              cv = $('<canvas>').prop({
+                  width: width - sub,
+                  height: height - sub
+              }),
               ctx = cv.get(0).getContext('2d');
         for(const {cv} of [
             cvMaze,
