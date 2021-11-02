@@ -35,7 +35,7 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
         const node = heap.pop(),
               {index, gCost, cost} = node;
         if(giveup) {
-            if(min < cost) throw 'Not found.';
+            if(min < cost) break;
             min = cost;
         }
         await update(index);
