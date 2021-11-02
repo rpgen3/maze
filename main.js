@@ -232,7 +232,7 @@
     add('穴掘り法', name => {
         makeMaze(name, rpgen4.dig);
     });
-    const search = async (name, func, weight = [1, 1], giveup = false) => {
+    const search = async (name, func, dfs = false, giveup = false) => {
         msg(`start ${name}`);
         const status = ++g_status;
         cvUsed.clear();
@@ -251,7 +251,7 @@
                 count++;
             },
             heuristic: selectHeuristic(),
-            weight, giveup
+            dfs, giveup
         });
         for(const i of result) {
             if(g_status !== status) throw 'break';
@@ -267,44 +267,33 @@
     add('幅優先探索(BFS)', name => {
         search(name, rpgen5.bfs);
     });
-    add('最良優先探索', name => {
-        search(name, rpgen5.aStar, [0, 1]);
-    });
     add('A*探索', name => {
         search(name, rpgen5.aStar);
     });
-    add('最良優先探索 + A*探索', async name => {
+    add('弱いA探索 + A*探索', async name => {
         let status = g_status + 1;
         try {
-            await search(name, rpgen5.aStar, [0, 1], true);
+            await search(name, rpgen5.aStar, true, true);
         }
         catch {
             if(status === g_status) await search(name, rpgen5.aStar);
         }
     });
-    add('A探索', name => {
-        search(name, rpgen5.aStar, aInputs.map(v => v()), isGiveup());
+    add('カスタムA探索', name => {
+        search(name, rpgen5.aStar, ...aInputs());
     });
     const aConfig = rpgen3.addInputBool(body, {
-        label: 'A探索の設定'
+        label: 'カスタムA探索の設定'
     });
     aConfig.elm.on('change', () => aConfig() ? aH.show() : aH.hide());
     const aH = $('<div>').appendTo(body).hide();
     const aInputs = [
-        '現時点までの距離G',
-        'ゴールまでの推定値H'
-    ].map(label => rpgen3.addInputNum(aH, {
+        'tie-breakをgCostが高い順にする（DFSっぽく）',
+        '最小のhCostが無くなれば探索を断念する（弱い探索）'
+    ].map(label => rpgen3.addInputBool(aH, {
         label,
-        save: true,
-        value: 1,
-        step: 0.1,
-        min: 0,
-        max: 2
-    }));
-    const isGiveup = rpgen3.addInputBool(aH, {
-        label: '最小評価を選べなかったとき探索を諦める',
         save: true
-    });
+    }));
     const selectHeuristic = (() => {
         const calcMinkowski = (x, y, _x, _y) => (Math.abs(_x - x) ** p + Math.abs(_y - y) ** p) ** (1 / p);
         const f = rpgen3.addSelect(body, {
