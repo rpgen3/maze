@@ -27,6 +27,9 @@ export class DAryHeap {
     get length(){
         return this.list.length;
     }
+    get get(){
+        return this.list[0].value;
+    }
     push(priority, value){
         const {list, length} = this;
         list.push(new Node(priority, value));
