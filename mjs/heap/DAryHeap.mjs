@@ -27,7 +27,7 @@ export class DAryHeap {
     get length(){
         return this.list.length;
     }
-    get get(){
+    get first(){
         return this.list[0].value;
     }
     push(priority, value){
