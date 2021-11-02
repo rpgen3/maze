@@ -1,5 +1,5 @@
 import {Heap} from 'https://rpgen3.github.io/maze/mjs/heap/Heap.mjs';
-export const aStar = async ({maze, start, goal, width, height, update, heuristic, weight = [1, 1], giveup = false}) => {
+export const aStar = async ({maze, start, goal, width, height, update, heuristic, dfs = false, giveup = false}) => {
     const toI = (x, y) => x + y * width;
     const toXY = i => {
         const x = i % width,
@@ -19,24 +19,42 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
         });
     };
     const _goal = toI(...goal),
-          [wG, wH] = weight,
-          calcH = i => heuristic(...goal, ...toXY(i)) * wH,
+          calcH = i => heuristic(...goal, ...toXY(i)),
           nodeMap = new Map,
-          heap = new Heap();
+          heap = new Heap(),
+          heapMap = new Map;
+    const push = (priority, node) => {
+        if(!heapMap.has(priority)) {
+            const h = new Heap(dfs);
+            heapMap.set(priority, h);
+            heap.push(priority, h);
+        }
+        heapMap.get(priority).push(node.gCost, node);
+    };
+    const pop = () => {
+        const h = heap.first,
+              node = h.pop();
+        if(!h.length) {
+            heap.pop();
+            heapMap.delete(node.cost);
+        }
+        return node;
+    };
     {
         const i = toI(...start),
               tmp = new Node(i, null, 0, calcH(i));
         nodeMap.set(i, tmp);
-        heap.push(tmp.cost, tmp);
+        push(tmp.cost, tmp);
     }
     let found = false,
         min = Infinity;
     while(heap.length) {
-        const node = heap.pop(),
-              {index, gCost, cost} = node;
+        const node = pop(),
+              {index, gCost} = node;
         if(giveup) {
-            if(min < cost) break;
-            min = cost;
+            const {hCost} = node;
+            if(min < hCost) break;
+            min = hCost;
         }
         await update(index);
         if(index === _goal) {
@@ -47,9 +65,9 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
         if(!abled.length) continue;
         const g = gCost + 1;
         for(const i of abled) {
-            const tmp = new Node(i, node, g * wG, calcH(i));
+            const tmp = new Node(i, node, g, calcH(i));
             nodeMap.set(i, tmp);
-            heap.push(tmp.cost, tmp);
+            push(tmp.cost, tmp);
         }
     }
     if(found) return Node.toArr(nodeMap.get(_goal));
