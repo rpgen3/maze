@@ -280,7 +280,7 @@
         }
     });
     add('カスタムA探索', name => {
-        search(name, rpgen5.aStar, ...aInputs());
+        search(name, rpgen5.aStar, ...aInputs.map(v => v()));
     });
     const aConfig = rpgen3.addInputBool(body, {
         label: 'カスタムA探索の設定'
