@@ -54,7 +54,11 @@
         const divide = 0.9 / inputW;
         if(w > 500) unit = Math.max(500, w * 0.5) * divide | 0;
         if(unit < 5) unit = w * divide | 0;
-        LayeredCanvas.update(unit, g_w, g_h);
+        LayeredCanvas.resize({
+            width: g_w,
+            height: g_h,
+            unit
+        });
         cvScale.drawScale();
         body.add(foot).show();
     });
