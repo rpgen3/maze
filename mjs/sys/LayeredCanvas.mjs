@@ -13,9 +13,13 @@ export class LayeredCanvas {
         });
         this.ctx = this.cv.get(0).getContext('2d');
     }
-    draw(x, y, isErase){
-        this.ctx.fillStyle = this.color;
-        this.ctx[isErase ? 'clearRect' : 'fillRect'](...[x, y, 1, 1].map(v => v * g_unit));
+    draw(x, y, color){
+        this.ctx.fillStyle = color || this.color;
+        this.ctx.fillRect(...[x, y, 1, 1].map(v => v * g_unit));
+        return this;
+    }
+    erase(x, y){
+        this.ctx.clearRect(...[x, y, 1, 1].map(v => v * g_unit));
         return this;
     }
     clear(){
