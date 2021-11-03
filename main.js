@@ -36,29 +36,18 @@
         min: 5,
         value: 25
     }));
-    let g_maze = [],
-        g_w = -1,
-        g_h = -1;
-    const toI = (x, y) => x + y * g_w;
-    const toXY = i => {
-        const x = i % g_w,
-              y = i / g_w | 0;
-        return [x, y];
-    };
+    let g_maze = [];
+    const {toI, toXY} = LayeredCanvas;
     addBtn(head, '初期化', () => {
         g_status++;
-        [g_w, g_h] = [inputW(), inputH()];
-        g_maze = [...Array(g_w * g_h).fill(false)];
+        const [width, height] = [inputW(), inputH()];
+        g_maze = [...Array(width, height).fill(false)];
         const w = $(window).width();
         let unit = -1;
         const divide = 0.9 / inputW;
         if(w > 500) unit = Math.max(500, w * 0.5) * divide | 0;
         if(unit < 5) unit = w * divide | 0;
-        LayeredCanvas.resize({
-            width: g_w,
-            height: g_h,
-            unit
-        });
+        LayeredCanvas.resize({width, height, unit});
         cvScale.drawScale();
         body.add(foot).show();
     });
@@ -79,8 +68,9 @@
     hideScale.elm.on('change', () => cvScale.cv.css('opacity', Number(!hideScale())));
     const hMacro = $('<div>').appendTo(foot);
     addBtn(hMacro, '拡大', () => {
-        const maze = [...Array(g_w * g_h).fill(false)],
-              [w, h] = [g_w, g_h].map(v => (v >> 1) + 1);
+        const {width, height} = LayeredCanvas,
+              maze = [...Array(width * height).fill(false)],
+              [w, h] = [width, height].map(v => (v >> 1) + 1);
         cvMaze.clear();
         for(let y = 0; y < h; y++) {
             for(let x = 0; x < w; x++) {
@@ -107,7 +97,7 @@
         const erase = eraseFlag();
         for(const [_x, _y] of lerp(...new Array(2).fill().flatMap(() => toXY(rpgen3.randInt(0, g_maze.length - 1))))) {
             cvMaze.draw(_x, _y, erase);
-            g_maze[_x + _y * g_w] = !erase;
+            g_maze[toI(_x, _y)] = !erase;
         }
     });
     addBtn(hMacro, 'ランダム座標', () => {
@@ -206,9 +196,9 @@
         cvRoad.clear();
         cvMaze.clear();
         for(const i of g_maze.keys()) g_maze[i] = false;
+        const {width, height} = LayeredCanvas;
         await func({
-            width: g_w,
-            height: g_h,
+            width, height,
             update: async (i, v = true) => {
                 if(g_status !== status) throw 'break';
                 g_maze[i] = v;
@@ -242,12 +232,12 @@
         cvUsed.clear();
         cvRoad.clear();
         let count = 0;
+        const {width, height} = LayeredCanvas;
         const result = await func({
             maze: g_maze.slice(),
             start: xyStart.slice(),
             goal: xyGoal.slice(),
-            width: g_w,
-            height: g_h,
+            width, height,
             update: async i => {
                 if(g_status !== status) throw 'break';
                 cvUsed.draw(...toXY(i));
