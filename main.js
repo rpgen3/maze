@@ -41,7 +41,7 @@
     addBtn(head, '初期化', () => {
         g_status++;
         const [width, height] = [inputW(), inputH()];
-        g_maze = [...Array(width, height).fill(false)];
+        g_maze = [...Array(width * height).fill(false)];
         const w = $(window).width();
         let unit = -1;
         const divide = 0.9 / inputW;
@@ -237,7 +237,6 @@
             maze: g_maze.slice(),
             start: xyStart.slice(),
             goal: xyGoal.slice(),
-            width, height,
             update: async i => {
                 if(g_status !== status) throw 'break';
                 cvUsed.draw(...toXY(i));
@@ -245,7 +244,7 @@
                 count++;
             },
             heuristic: selectHeuristic(),
-            dfs, giveup
+            width, height, dfs, giveup
         });
         for(const i of result) {
             if(g_status !== status) throw 'break';
