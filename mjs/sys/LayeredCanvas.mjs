@@ -33,6 +33,9 @@ export class LayeredCanvas {
     drawScale(){
         drawScale(this);
     }
+    static get elm(){
+        return g_elm;
+    }
     static get width(){
         return g_w;
     }
