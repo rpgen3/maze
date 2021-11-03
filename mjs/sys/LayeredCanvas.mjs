@@ -1,8 +1,8 @@
 import {Observe} from 'https://rpgen3.github.io/maze/mjs/sys/Observe.mjs';
 let g_elm = null,
-    g_unit = -1,
     g_w = -1,
-    g_h = -1;
+    g_h = -1,
+    g_unit = -1;
 export class LayeredCanvas {
     constructor(color){
         this.color = color;
@@ -29,22 +29,30 @@ export class LayeredCanvas {
     drawScale(){
         drawScale(this);
     }
+    static get width(){
+        return g_w;
+    }
+    static get height(){
+        return g_h;
+    }
+    static get unit(){
+        return g_unit;
+    }
     static init(elm){
         g_elm = elm.css({
             position: 'relative',
             display: 'inline-block'
         }).empty().append($('<canvas>'));
-        return this;
     }
-    static update(unit, w, h){
+    static resize({width, height, unit}){
+        if(!width || !height || !unit) throw 'Could not resize.';
         g_elm.find('canvas').prop({
-            width: w * unit + 1,
-            height: h * unit + 1
+            width: width * unit + 1,
+            height: height * unit + 1
         });
+        g_w = width;
+        g_h = height;
         g_unit = unit;
-        g_w = w;
-        g_h = h;
-        return this;
     }
 }
 const onDraw = (cv, callback, isErase = () => false) => cv.cv
