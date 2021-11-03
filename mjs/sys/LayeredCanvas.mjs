@@ -38,6 +38,14 @@ export class LayeredCanvas {
     static get unit(){
         return g_unit;
     }
+    static toI(x, y){
+        return x + y * g_w;
+    }
+    static toXY(i){
+        const x = i % g_w,
+              y = i / g_w | 0;
+        return [x, y];
+    }
     static init(elm){
         g_elm = elm.css({
             position: 'relative',
