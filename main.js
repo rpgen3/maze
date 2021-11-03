@@ -96,7 +96,8 @@
     addBtn(hMacro, '線を引く', () => {
         const erase = eraseFlag();
         for(const [_x, _y] of lerp(...new Array(2).fill().flatMap(() => toXY(rpgen3.randInt(0, g_maze.length - 1))))) {
-            cvMaze[erase ? 'erase' : 'draw'](_x, _y);
+            if(erase) cvMaze.erase(_x, _y);
+            else cvMaze.draw(_x, _y);
             g_maze[toI(_x, _y)] = !erase;
         }
     });
@@ -150,7 +151,8 @@
                 case 0: {
                     const now = performance.now();
                     for(const [_x, _y] of now - lastTime > deltaTime ? [[x, y]] : lerp(x, y, ...xyLast)) {
-                        cvMaze[erase ? 'erase' : 'draw'](_x, _y);
+                        if(erase) cvMaze.erase(_x, _y);
+                        else cvMaze.draw(_x, _y);
                         g_maze[toI(_x, _y)] = !erase;
                     }
                     xyLast[0] = x;
@@ -159,17 +161,25 @@
                     break;
                 }
                 case 1:
-                    cvStart.clear()[erase ? 'erase' : 'draw'](x, y);
-                    if(erase) xyStart[0] = xyStart[1] = -1;
+                    cvStart.clear();
+                    if(erase) {
+                        cvStart.erase(x, y);
+                        xyStart[0] = xyStart[1] = -1;
+                    }
                     else {
+                        cvStart.draw(x, y);
                         xyStart[0] = x;
                         xyStart[1] = y;
                     }
                     break;
                 case 2:
-                    cvGoal.clear()[erase ? 'erase' : 'draw'](x, y);
-                    if(erase) xyGoal[0] = xyGoal[1] = -1;
+                    cvGoal.clear();
+                    if(erase) {
+                        cvGoal.erase(x, y);
+                        xyGoal[0] = xyGoal[1] = -1;
+                    }
                     else {
+                        cvGoal.draw(x, y);
                         xyGoal[0] = x;
                         xyGoal[1] = y;
                     }
@@ -202,13 +212,17 @@
             update: async (i, v = true) => {
                 if(g_status !== status) throw 'break';
                 g_maze[i] = v;
-                cvMaze[!v ? 'erase' : 'draw'](...toXY(i));
+                const [x, y] = toXY(i);
+                if(v) cvMaze.draw(x, y);
+                else cvMaze.erase(x, y);
                 await wait();
             },
             updateAll: async maze => {
                 for(const [i, v] of maze.entries()) {
                     g_maze[i] = v;
-                    cvMaze[!v ? 'erase' : 'draw'](...toXY(i));
+                    const [x, y] = toXY(i);
+                    if(v) cvMaze.draw(x, y);
+                    else cvMaze.erase(x, y);
                 }
                 await wait();
             }
