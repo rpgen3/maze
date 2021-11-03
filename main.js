@@ -44,7 +44,7 @@
         g_maze = [...Array(width * height).fill(false)];
         const w = $(window).width();
         let unit = -1;
-        const divide = 0.9 / inputW;
+        const divide = 0.9 / width;
         if(w > 500) unit = Math.max(500, w * 0.5) * divide | 0;
         if(unit < 5) unit = w * divide | 0;
         LayeredCanvas.resize({width, height, unit});
