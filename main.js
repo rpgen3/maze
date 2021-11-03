@@ -96,7 +96,7 @@
     addBtn(hMacro, '線を引く', () => {
         const erase = eraseFlag();
         for(const [_x, _y] of lerp(...new Array(2).fill().flatMap(() => toXY(rpgen3.randInt(0, g_maze.length - 1))))) {
-            cvMaze.draw(_x, _y, erase);
+            cvMaze[erase ? 'erase' : 'draw'](_x, _y);
             g_maze[toI(_x, _y)] = !erase;
         }
     });
@@ -150,7 +150,7 @@
                 case 0: {
                     const now = performance.now();
                     for(const [_x, _y] of now - lastTime > deltaTime ? [[x, y]] : lerp(x, y, ...xyLast)) {
-                        cvMaze.draw(_x, _y, erase);
+                        cvMaze[erase ? 'erase' : 'draw'](_x, _y);
                         g_maze[toI(_x, _y)] = !erase;
                     }
                     xyLast[0] = x;
@@ -159,7 +159,7 @@
                     break;
                 }
                 case 1:
-                    cvStart.clear().draw(x, y, erase);
+                    cvStart.clear()[erase ? 'erase' : 'draw'](x, y);
                     if(erase) xyStart[0] = xyStart[1] = -1;
                     else {
                         xyStart[0] = x;
@@ -167,7 +167,7 @@
                     }
                     break;
                 case 2:
-                    cvGoal.clear().draw(x, y, erase);
+                    cvGoal.clear()[erase ? 'erase' : 'draw'](x, y);
                     if(erase) xyGoal[0] = xyGoal[1] = -1;
                     else {
                         xyGoal[0] = x;
@@ -202,13 +202,13 @@
             update: async (i, v = true) => {
                 if(g_status !== status) throw 'break';
                 g_maze[i] = v;
-                cvMaze.draw(...toXY(i), !v);
+                cvMaze[!v ? 'erase' : 'draw'](...toXY(i));
                 await wait();
             },
             updateAll: async maze => {
                 for(const [i, v] of maze.entries()) {
                     g_maze[i] = v;
-                    cvMaze.draw(...toXY(i), !v);
+                    cvMaze[!v ? 'erase' : 'draw'](...toXY(i));
                 }
                 await wait();
             }
