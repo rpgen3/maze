@@ -47,7 +47,7 @@
         const divide = 0.9 / width;
         if(w > 500) unit = Math.max(500, w * 0.5) * divide | 0;
         if(unit < 5) unit = w * divide | 0;
-        LayeredCanvas.init({width, height, unit, html: holder});
+        LayeredCanvas.resize({width, height, unit});
         cvScale.drawScale();
         body.add(foot).show();
     });
@@ -112,7 +112,7 @@
         cvStart.clear().draw(...xyStart);
         cvGoal.clear().draw(...xyGoal);
     });
-    const holder = $('<div>').appendTo(foot);
+    LayeredCanvas.init($('<div>').appendTo(foot));
     addBtn($('<div>').appendTo(foot), '画像として保存', () => {
         const {width, height} = cvScale.ctx.canvas,
               sub = hideScale() ? 1 : 0,
