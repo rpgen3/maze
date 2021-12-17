@@ -59,6 +59,14 @@ export class DAryHeap {
         }
         return result.value;
     }
+    [Symbol.iterator](){
+        return {
+            next: () => {
+                if(this.length) return {done: false, value: this.pop()};
+                else return {done: true};
+            }
+        };
+    }
 }
 class Node {
     constructor(priority, value) {
