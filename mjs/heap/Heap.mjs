@@ -1,10 +1,14 @@
-const toParent = n => n - 1 >> 1,
-      toRoot = n => (n << 1) + 1;
 export class Heap {
     #isMaxHeap = false;
     constructor(isMaxHeap){
         this.#isMaxHeap = Boolean(isMaxHeap);
         this.list = [];
+    }
+    #toParent(n){
+        return n - 1 >> 1;
+    }
+    #toRoot(n){
+        return (n << 1) + 1;
     }
     #compare(a, b){
         const {list} = this,
@@ -27,7 +31,7 @@ export class Heap {
         list.push(new Node(priority, value));
         let i = length;
         while(i){
-            const p = toParent(i);
+            const p = this.#toParent(i);
             if(this.#compare(i, p)) this.#swap(i, p);
             i = p;
         }
@@ -41,7 +45,7 @@ export class Heap {
         list[0] = list.pop();
         let i = 0;
         while(true){
-            let r = toRoot(i);
+            let r = this.#toRoot(i);
             if(r >= n) break;
             else if(r < n - 1 && this.#compare(r + 1, r)) r++;
             if(this.#compare(r, i)) this.#swap(r, i);
