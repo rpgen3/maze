@@ -30,7 +30,7 @@ export class DAryHeap {
     get first(){
         return this.list[0].value;
     }
-    push(priority, value){
+    add(priority, value){
         const {list, length} = this;
         list.push(new Node(priority, value));
         let i = length;
