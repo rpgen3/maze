@@ -23,13 +23,13 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
           nodeMap = new Map,
           heap = new Heap(),
           heapMap = new Map;
-    const push = (priority, node) => {
+    const add = (priority, node) => {
         if(!heapMap.has(priority)) {
             const h = new Heap(dfs);
             heapMap.set(priority, h);
-            heap.push(priority, h);
+            heap.add(priority, h);
         }
-        heapMap.get(priority).push(node.gCost, node);
+        heapMap.get(priority).add(node.gCost, node);
     };
     const pop = () => {
         const h = heap.first,
@@ -44,7 +44,7 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
         const i = toI(...start),
               tmp = new Node(i, null, 0, calcH(i));
         nodeMap.set(i, tmp);
-        push(tmp.cost, tmp);
+        add(tmp.cost, tmp);
     }
     let found = false,
         min = Infinity;
@@ -67,7 +67,7 @@ export const aStar = async ({maze, start, goal, width, height, update, heuristic
         for(const i of abled) {
             const tmp = new Node(i, node, g, calcH(i));
             nodeMap.set(i, tmp);
-            push(tmp.cost, tmp);
+            add(tmp.cost, tmp);
         }
     }
     if(found) return Node.toArr(nodeMap.get(_goal));
