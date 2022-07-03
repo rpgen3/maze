@@ -2,8 +2,8 @@ export class Heap {
     #isMaxHeap = false;
     #n = 1;
     #d = 4;
-    constructor(isMaxHeap, n = 1) { // n is a parameter of "d-ary heap".
-        this.#isMaxHeap = Boolean(isMaxHeap);
+    constructor(isMaxHeap = false, n = 1) { // n is a parameter of "d-ary heap".
+        this.#isMaxHeap = isMaxHeap;
         this.#n = n;
         this.#d = 2 << n;
         this.list = [];
