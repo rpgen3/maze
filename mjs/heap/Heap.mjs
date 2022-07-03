@@ -63,14 +63,10 @@ export class Heap {
         return this.#pop().value;
     }
     *[Symbol.iterator]() {
-        while (this.length) {
-            yield this.pop();
-        }
+        while (this.length) yield this.pop();
     }
     *entries() {
-        while (this.length) {
-            yield this.#pop();
-        }
+        while (this.length) yield this.#pop();
     }
 }
 class Node {
