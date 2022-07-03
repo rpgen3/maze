@@ -59,13 +59,15 @@ export class DAryHeap {
         }
         return result.value;
     }
-    [Symbol.iterator](){
-        return {
-            next: () => {
-                if(this.length) return {done: false, value: this.pop()};
-                else return {done: true};
-            }
-        };
+    *[Symbol.iterator]() {
+        while (this.length) {
+            yield this.pop();
+        }
+    }
+    *entries() {
+        for (const entry of this.list.entries()) {
+            yield entry.pop();
+        }
     }
 }
 class Node {
