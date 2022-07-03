@@ -1,32 +1,36 @@
 export class Heap {
     #isMaxHeap = false;
-    constructor(isMaxHeap){
+    #n = 1;
+    #d = 4;
+    constructor(isMaxHeap, n = 1) { // n is a parameter of "d-ary heap".
         this.#isMaxHeap = Boolean(isMaxHeap);
+        this.#n = n;
+        this.#d = 2 << n;
         this.list = [];
     }
-    #toParent(n){
-        return n - 1 >> 1;
+    #toParent(n) {
+        return n - 1 >> this.#n;
     }
-    #toRoot(n){
-        return (n << 1) + 1;
+    #toRoot(n) {
+        return (n << this.#n) + 1;
     }
-    #compare(a, b){
+    #compare(a, b) {
         const {list} = this,
               c = list[a].priority,
               d = list[b].priority;
         return this.#isMaxHeap ? c > d : c < d;
     }
-    #swap(a, b){
+    #swap(a, b) {
         const {list} = this;
         [list[a], list[b]] = [list[b], list[a]];
     }
-    get length(){
+    get length() {
         return this.list.length;
     }
-    get first(){
+    get first() {
         return this.list[0].value;
     }
-    add(priority, value){
+    add(priority, value) {
         const {list, length} = this;
         list.push(new Node(priority, value));
         let i = length;
@@ -36,10 +40,10 @@ export class Heap {
             i = p;
         }
     }
-    pop(){
+    #pop() {
         const {list, length} = this,
               n = length - 1;
-        if(n === 0) return list.pop().value;
+        if(n === 0) return list.pop();
         else if(n === -1) throw 'queue is empty.';
         const result = list[0];
         list[0] = list.pop();
@@ -47,11 +51,16 @@ export class Heap {
         while(true){
             let r = this.#toRoot(i);
             if(r >= n) break;
-            else if(r < n - 1 && this.#compare(r + 1, r)) r++;
+            let _i = 0;
+            for (let i = 1, max = Math.min(this.#d, n - r); i < max; i++) if(this.#compare(r + i, r + _i)) _i = i;
+            r += _i;
             if(this.#compare(r, i)) this.#swap(r, i);
             i = r;
         }
-        return result.value;
+        return result;
+    }
+    pop() {
+        return this.#pop().value;
     }
     *[Symbol.iterator]() {
         while (this.length) {
@@ -59,8 +68,8 @@ export class Heap {
         }
     }
     *entries() {
-        for (const entry of this.list.entries()) {
-            yield entry.pop();
+        while (this.length) {
+            yield this.#pop();
         }
     }
 }
