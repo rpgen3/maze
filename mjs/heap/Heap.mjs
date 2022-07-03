@@ -1,7 +1,7 @@
 export class Heap {
-    #isMaxHeap = false;
-    #n = 1;
-    #d = 4;
+    #isMaxHeap;
+    #n;
+    #d;
     constructor(isMaxHeap = false, n = 1) { // n is a parameter of "d-ary heap".
         this.#isMaxHeap = isMaxHeap;
         this.#n = n;
