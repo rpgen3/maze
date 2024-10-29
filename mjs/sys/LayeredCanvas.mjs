@@ -77,16 +77,15 @@ const onDraw = (cv, callback, isErase = () => false) => cv.cv
     const {clientX, clientY, buttons, type, originalEvent} = e;
     const isClickedLeft = (buttons & 1) === 1;
     const isClickedRight = (buttons & 2) === 2;
+    console.log(e.which)
     let _x = clientX,
         _y = clientY;
     if(type.includes('touch')){
         const {clientX, clientY} = originalEvent.touches[0];
         _x = clientX;
         _y = clientY;
-    } else {
-        if(isClickedLeft) {
-            return;
-        }
+    } else if(!isClickedLeft && !isClickedRight) {
+        return;
     }
     const {left, top} = originalEvent.target.getBoundingClientRect(),
           [x, y] = [
