@@ -74,7 +74,7 @@ const onDraw = (cv, callback, isErase = () => false) => cv.cv
 .bind('contextmenu', () => false)
 .on('mousedown mousemove touchstart touchmove', e => {
     e.preventDefault();
-    const {clientX, clientY, buttons, which, type, originalEvent} = e;
+    const {clientX, clientY, buttons, buttons, type, originalEvent} = e;
     let _x = clientX,
         _y = clientY;
     if(type.includes('touch')){
@@ -82,7 +82,7 @@ const onDraw = (cv, callback, isErase = () => false) => cv.cv
         _x = clientX;
         _y = clientY;
     }
-    else if(!which) return;
+    else if(buttons&1===1) return;
     const {left, top} = originalEvent.target.getBoundingClientRect(),
           [x, y] = [
               _x - left,
