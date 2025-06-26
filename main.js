@@ -134,6 +134,14 @@
             download: 'maze.png'
         }).get(0).click();
     });
+    addBtn($('<div>').appendTo(foot), '文字列として保存', () => {
+        const width = inputW();
+        let arr = [];
+        for (let i = 0; i < g_maze.length; i += width) {
+            arr.push(g_maze.slice(i, i + width).map(v => v ? 1 : 0).join(''));
+        }
+        prompt('出力', arr.join('\n'));
+    });
     const cvMaze = new LayeredCanvas('rgba(127, 127, 127, 1)'),
           cvUsed = new LayeredCanvas('rgba(0, 127, 127, 0.4)'),
           cvRoad = new LayeredCanvas('rgba(255, 0, 0, 0.4)'),
