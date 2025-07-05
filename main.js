@@ -140,8 +140,14 @@
         for (let i = 0; i < g_maze.length; i += width) {
             arr.push(g_maze.slice(i, i + width).map(v => v ? 1 : 0).join(''));
         }
-        prompt('出力', arr.join('\n'));
+        rpgen3.addInputStr(outputAsStrWrapper.empty(), {
+            label: '出力',
+            copy: true,
+            textarea: true,
+            value: arr.join('\n')
+        });
     });
+    const outputAsStrWrapper = $('<div>').appendTo(foot);
     const cvMaze = new LayeredCanvas('rgba(127, 127, 127, 1)'),
           cvUsed = new LayeredCanvas('rgba(0, 127, 127, 0.4)'),
           cvRoad = new LayeredCanvas('rgba(255, 0, 0, 0.4)'),
